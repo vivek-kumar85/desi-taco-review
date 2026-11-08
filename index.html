@@ -197,7 +197,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       <input class="other" id="other-better" type="text" maxlength="60" autocomplete="off" autocorrect="on" autocapitalize="sentences" enterkeyhint="done" placeholder="Type what could be better" aria-label="Type what could be better" hidden>
     </div>
 
-    <a class="btn btn-write" id="write" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>&#10024; Write my review</span><small>We write it, copy it and open Google</small></a>
+    <a class="btn btn-write" id="write" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>&#10024; Write my review</span><small>We write it, copy it and open Google. You paste it there.</small></a>
     <p class="hint" id="hint" aria-live="polite">Pick your stars and at least one thing above.</p>
   </section>
 
@@ -515,7 +515,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       (typed("had") ? 1 : 0) + (typed("liked") ? 1 : 0) + (typed("better") ? 1 : 0);
   }
   function ready() {
-    if (stars && anyPicked()) { hint.textContent = "All set! On Google just tap your stars, Paste, add photos and Post."; hint.className = "hint"; }
+    if (stars && anyPicked()) { hint.textContent = "All set! On Google: tap " + stars + (stars === 1 ? " star" : " stars") + ", then Paste and Post."; hint.className = "hint"; }
     else { hint.textContent = "Pick your stars and at least one thing above."; hint.className = "hint"; }
   }
   // briefly light up the part that still needs a tap
