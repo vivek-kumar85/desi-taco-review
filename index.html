@@ -106,13 +106,13 @@ h1 .pop { color: var(--yellow); }
 .hint.warn { color: #ffd166; font-weight: 700; }
 /* a short glow on the part that still needs a tap */
 .nudge { border-radius: 14px; box-shadow: 0 0 0 2px var(--yellow); }
-.draft[hidden] { display: none; }
-.draft textarea { display: block; width: 100%; min-height: 140px; resize: vertical; font: 16px/1.5 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 12px; }
-.then { margin: 0 0 -8px; font-weight: 700; color: var(--ink); font-size: .95rem; }
-.steps { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: .92rem; }
-.steps li + li { margin-top: 4px; }
+.card[hidden] { display: none; }
+.draft textarea { display: block; width: 100%; min-height: 150px; resize: vertical; font: 16px/1.5 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 12px; }
+#done h2 { color: var(--green); }
+.steps { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: .95rem; }
+.steps li + li { margin-top: 6px; }
 .steps b { color: var(--ink); }
-.toast { text-align: center; margin: 0; min-height: 1.3em; font-weight: 700; color: var(--green); }
+.sub a { color: var(--cyan); }
 .honest { margin: 0; font-size: .9rem; color: var(--muted); text-align: center; }
 .honest b { color: var(--ink); }
 footer { text-align: center; color: var(--muted); font-size: .8rem; }
@@ -137,7 +137,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   <header class="hero">
     <div class="logo"><picture><source type="image/webp" srcset="logo.webp"><img src="logo.png" width="128" height="128" alt="The Desi Taco Co."></picture></div>
     <h1>Thanks for coming <span class="pop">by!</span></h1>
-    <p class="lede">Tap your stars and what you had, and we'll write your Google review for you. <b>Takes 30 seconds.</b></p>
+    <p class="lede">Tap your stars and what you had. We write your review and open Google, you just paste and post. <b>Takes 30 seconds.</b></p>
   </header>
 
   <section class="card" id="form" aria-labelledby="rate">
@@ -197,24 +197,29 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       <input class="other" id="other-better" type="text" maxlength="60" autocomplete="off" autocorrect="on" autocapitalize="sentences" enterkeyhint="done" placeholder="Type what could be better" aria-label="Type what could be better" hidden>
     </div>
 
-    <button type="button" class="btn btn-write" id="write"><span>&#10024; Write my review</span></button>
+    <a class="btn btn-write" id="write" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>&#10024; Write my review</span><small>We write it, copy it and open Google</small></a>
     <p class="hint" id="hint" aria-live="polite">Pick your stars and at least one thing above.</p>
   </section>
 
-  <section class="card draft" id="draft" aria-labelledby="draft-title" hidden>
-    <h2 id="draft-title">Your review</h2>
-    <p class="sub">Edit anything you like. Want a different one? Tap Write my review again.</p>
-    <label for="text" style="position:absolute;left:-9999px">Review text</label>
-    <textarea id="text" rows="5" autocapitalize="sentences"></textarea>
-    <a class="btn btn-google" id="cta" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Copy &amp; open Google</span><small>Copies your review and opens Google's review page</small></a>
-    <p class="toast" id="toast" aria-live="polite"></p>
-    <p class="then">Then on Google:</p>
+  <!-- shown after the tap, for when they come back to this tab -->
+  <section class="card" id="done" aria-labelledby="done-title" hidden>
+    <h2 id="done-title">Review copied!</h2>
     <ol class="steps">
-      <li>Tap <b id="n-stars">the same stars</b>.</li>
-      <li>Press and hold the text box and tap <b>Paste</b>.</li>
-      <li>Got food pics? Tap <b>Add photos</b> and pick them.</li>
-      <li>Tap <b>Post</b>. Done, shukriya!</li>
+      <li>On Google, tap <b id="n-stars">your stars</b>.</li>
+      <li>Tap the box and <b>Paste</b>.</li>
+      <li>&#128247; <b>Add photos</b> of your food (optional).</li>
+      <li>Tap <b>Post</b>. Shukriya!</li>
     </ol>
+    <p class="sub">Google didn't open? <a id="reopen" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener">Open it here</a>. Want a different review? Tap Write my review again.</p>
+  </section>
+
+  <!-- only if the phone refuses to copy: show the text to copy by hand -->
+  <section class="card draft" id="fallback" aria-labelledby="fb-title" hidden>
+    <h2 id="fb-title">Copy your review</h2>
+    <p class="sub">Your phone didn't let us copy it. Press and hold the text, tap Select All, then Copy.</p>
+    <label for="text" style="position:absolute;left:-9999px">Review text</label>
+    <textarea id="text" rows="6" readonly></textarea>
+    <a class="btn btn-google" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Open Google reviews</span></a>
   </section>
 
   <p class="honest"><b>Something not right?</b> Tell us honestly on Google, or ask for Chirag at the counter. We read every review.</p>
@@ -490,9 +495,9 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   var starBtns = all(".stars button");
   var write = document.getElementById("write");
   var hint = document.getElementById("hint");
-  var draftCard = document.getElementById("draft");
+  var doneCard = document.getElementById("done");
+  var fallbackCard = document.getElementById("fallback");
   var text = document.getElementById("text");
-  var toast = document.getElementById("toast");
 
   function picked(group) {
     return all('.chips[data-group="' + group + '"] button[aria-pressed="true"]')
@@ -510,7 +515,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       (typed("had") ? 1 : 0) + (typed("liked") ? 1 : 0) + (typed("better") ? 1 : 0);
   }
   function ready() {
-    if (stars && anyPicked()) { hint.textContent = "All set, tap Write my review."; hint.className = "hint"; }
+    if (stars && anyPicked()) { hint.textContent = "All set! On Google just tap your stars, Paste, add photos and Post."; hint.className = "hint"; }
     else { hint.textContent = "Pick your stars and at least one thing above."; hint.className = "hint"; }
   }
   // briefly light up the part that still needs a tap
@@ -571,28 +576,29 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     return t;
   }
 
-  function compose() {
-    text.value = fresh({
+  // One tap does it all: write a fresh review, copy it, and let the link open
+  // Google's review page. Google never lets a website type into its review box,
+  // so the customer pastes it there (one tap on most keyboards) and posts.
+  write.addEventListener("click", function (e) {
+    // never a dead button: say what's missing and take them there
+    if (!stars) { e.preventDefault(); hint.textContent = "Tap your stars first."; hint.className = "hint warn"; var s = document.getElementById("stars"); go(document.getElementById("form")); nudge(s); return; }
+    if (!anyPicked()) { e.preventDefault(); hint.textContent = "Tap at least one thing you had or liked."; hint.className = "hint warn"; var h = document.getElementById("had-block"); go(h); nudge(h); return; }
+    var review = fresh({
       stars: stars, had: picked("had"), liked: picked("liked"), better: picked("better"),
       otherHad: typed("had"), otherLiked: typed("liked"), otherBetter: typed("better")
     });
     document.getElementById("n-stars").textContent = stars + (stars === 1 ? " star" : " stars");
-    toast.textContent = "";
-    grow();
-  }
-  function grow() {
-    text.style.height = "auto";
-    text.style.height = (text.scrollHeight + 8) + "px";
-  }
-  text.addEventListener("input", grow);
-  write.addEventListener("click", function () {
-    // never a dead button: say what's missing and take them there
-    if (!stars) { hint.textContent = "Tap your stars first."; hint.className = "hint warn"; var s = document.getElementById("stars"); go(document.getElementById("form")); nudge(s); return; }
-    if (!anyPicked()) { hint.textContent = "Tap at least one thing you had or liked."; hint.className = "hint warn"; var h = document.getElementById("had-block"); go(h); nudge(h); return; }
-    compose();
-    draftCard.hidden = false;
-    grow(); // measure again now that the box is visible
-    go(draftCard);
+    if (!copyText(review)) {
+      // this phone won't copy from a web page: show the text to copy by hand
+      e.preventDefault();
+      text.value = review;
+      doneCard.hidden = true;
+      fallbackCard.hidden = false;
+      go(fallbackCard);
+      return;
+    }
+    fallbackCard.hidden = true;
+    doneCard.hidden = false; // waiting here for when they come back from Google
   });
 
   // Copy that works on every phone. The old-style copy runs instantly inside
@@ -622,20 +628,12 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     document.body.removeChild(el);
     if (navigator.clipboard && navigator.clipboard.writeText) {
       try {
-        navigator.clipboard.writeText(str).then(function () { toast.textContent = "Copied! Now paste it on Google."; }, function () {});
+        navigator.clipboard.writeText(str).then(function () {}, function () {});
         ok = true;
       } catch (e) { /* the old-style copy above still counts */ }
     }
     return ok;
   }
-  function copyNow() {
-    var value = text.value.replace(/^\s+|\s+$/g, "");
-    if (!value) return false;
-    var ok = copyText(value);
-    toast.textContent = ok ? "Copied! Now paste it on Google." : "Press and hold the text above, tap Select All, then Copy.";
-    return ok;
-  }
-  document.getElementById("cta").addEventListener("click", copyNow); // then the link opens Google as normal
 })();
 </script>
 </body>

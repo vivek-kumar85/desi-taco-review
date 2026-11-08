@@ -2,7 +2,7 @@
 
 The page customers open from the QR code on the counter at The Desi Taco Co., Salunkhe Vihar, Pune. Live at https://desi-taco.vercel.app (Vercel deploys every push to `main`).
 
-Customers pick their own star rating and what they had, liked or would improve (each section also has an "Other" box to type in). The page drafts a short review from those choices only, the customer edits it, then copies it and opens Google's review form to paste it, add photos and post it themselves.
+Customers pick their own star rating and what they had, liked or would improve (each section also has an "Other" box to type in). One tap on "Write my review" writes a short review from those choices only, copies it and opens Google's review form; the customer taps their stars, pastes, adds photos if they like, and posts it themselves. (Google doesn't let any website fill in its review box or post for someone, so the paste is the one step left.)
 
 - Everything runs in the customer's browser. Nothing is sent or stored, apart from a list of recent drafts kept on the customer's own phone so it never shows the same one twice.
 - Works on old and new phones, iPhones included: no flex `gap`, native control styling reset, 16px inputs (no iOS zoom), WebP logo with a PNG fallback, and a copy step that finishes inside the tap.
