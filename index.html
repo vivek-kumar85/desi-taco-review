@@ -73,6 +73,10 @@ h1 .pop { color: var(--yellow); }
 .chips button { font: 500 .95rem/1.2 var(--body); min-height: 44px; padding: 9px 15px; border-radius: 999px; border: 1.5px solid rgba(11, 183, 233, .55); background: transparent; color: var(--ink); cursor: pointer; }
 .better .chips button { border-color: rgba(228, 41, 47, .55); }
 .chips button[aria-pressed="true"] { background: var(--yellow); border-color: var(--yellow); color: var(--night); font-weight: 700; }
+.other { width: 100%; margin-top: 10px; min-height: 44px; font: 1rem/1.3 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 10px 12px; }
+.other::placeholder { color: #7f88b8; }
+.better .other { border-color: rgba(228, 41, 47, .8); }
+.other[hidden] { display: none; }
 .write { font: 800 1.2rem/1.1 var(--display); color: var(--night); background: var(--yellow); border: 0; border-radius: 999px; padding: 14px 18px 12px; cursor: pointer; box-shadow: 0 6px 22px rgba(253, 241, 9, .25); }
 .write[disabled] { opacity: .45; box-shadow: none; cursor: default; }
 .hint { margin: -6px 0 0; text-align: center; font-size: .88rem; color: var(--muted); min-height: 1.3em; }
@@ -128,7 +132,9 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
         <button type="button" aria-pressed="false">Burrito roll</button>
         <button type="button" aria-pressed="false">Nachos</button>
         <button type="button" aria-pressed="false">Til gud poli</button>
+        <button type="button" aria-pressed="false" data-other="had">Other&hellip;</button>
       </div>
+      <input class="other" id="other-had" type="text" maxlength="60" autocomplete="off" placeholder="Type what you had" aria-label="Type what you had" hidden>
     </div>
     <div class="liked">
       <p class="group-label" id="liked-label">What you liked</p>
@@ -141,7 +147,9 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
         <button type="button" aria-pressed="false">Friendly staff</button>
         <button type="button" aria-pressed="false">Veg options</button>
         <button type="button" aria-pressed="false">The vibe</button>
+        <button type="button" aria-pressed="false" data-other="liked">Other&hellip;</button>
       </div>
+      <input class="other" id="other-liked" type="text" maxlength="60" autocomplete="off" placeholder="Type what you liked" aria-label="Type what you liked" hidden>
     </div>
     <div class="better">
       <p class="group-label" id="better-label">Could be better <span>(optional)</span></p>
@@ -153,7 +161,9 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
         <button type="button" aria-pressed="false">Price</button>
         <button type="button" aria-pressed="false">Seating</button>
         <button type="button" aria-pressed="false">Parking</button>
+        <button type="button" aria-pressed="false" data-other="better">Other&hellip;</button>
       </div>
+      <input class="other" id="other-better" type="text" maxlength="60" autocomplete="off" placeholder="Type what could be better" aria-label="Type what could be better" hidden>
     </div>
 
     <button type="button" class="write" id="write" disabled>Help me write it</button>
@@ -169,7 +179,9 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
     <ol class="steps">
       <li>Tap <b>Copy &amp; open Google</b> below.</li>
       <li>On Google, tap <b id="n-stars">the same stars</b>.</li>
-      <li>Press and hold the text box, tap <b>Paste</b>, then <b>Post</b>.</li>
+      <li>Press and hold the text box and tap <b>Paste</b>.</li>
+      <li>Got food pics? Tap <b>Add photos</b> on Google and pick them.</li>
+      <li>Tap <b>Post</b>. Done, shukriya!</li>
     </ol>
     <p class="toast" id="toast" aria-live="polite"></p>
   </section>
@@ -282,11 +294,11 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
 
   // words too common to count as a repeat ("the" twice is fine, "spot" twice is not)
   var COMMON = { "the": 1, "and": 1, "was": 1, "were": 1, "for": 1, "with": 1, "this": 1, "that": 1, "it's": 1, "really": 1, "very": 1, "have": 1, "had": 1, "but": 1, "you": 1, "too": 1, "just": 1, "taco": 1, "tacos": 1, "more": 1, "bit": 1, "time": 1, "here": 1, "place": 1, "they": 1, "what": 1, "from": 1, "like": 1, "will": 1 };
-  function repeats(text) {
+  function repeats(text, ignore) {
     var seen = {}, words = text.toLowerCase().match(/[a-z']+/g) || [];
     for (var i = 0; i < words.length; i++) {
       var w = words[i];
-      if (w.length < 4 || COMMON[w]) continue;
+      if (w.length < 4 || COMMON[w] || (ignore && ignore[w])) continue;
       if (w.length > 4) w = w.replace(/s$/, ""); // "masala" and "masalas" count as the same word
       if (seen[w]) return true;
       seen[w] = 1;
@@ -307,6 +319,44 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   };
   function places(text) { return (text.match(PLACE) || []).length; }
 
+  // What the customer typed in an "Other" box: kept in their own words, only
+  // tidied (no links, emails or phone numbers, no trailing punctuation, max 60).
+  function clean(x) {
+    if (!x) return "";
+    x = String(x);
+    // links, emails and phone numbers don't belong in a review: ignore the whole box
+    if (/https?:\/\/|www\.|\S+@\S+\.\S+|\+?\d[\d\s-]{6,}\d/i.test(x)) return "";
+    x = x
+      .replace(/[<>{}\[\]]/g, "")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/[.,;:!?\s]+$/, "");
+    if (x.length > 60) x = x.slice(0, 60).replace(/\s+\S*$/, "");
+    return x;
+  }
+  // "music was great" is already a sentence; "green chutney" is just a thing
+  function isSentence(x) {
+    return x.split(" ").length >= 2 && /\b(was|were|is|are|had|have|loved|liked|could|should|felt|tasted)\b/i.test(x);
+  }
+  function asSentence(x) { return cap(x) + "."; }
+  function thing(x) { return /^[A-Z]/.test(x) ? x : "the " + x.replace(/^the\s+/i, ""); }
+  function plural(x) { return /[^s]s$/i.test(x); }
+  function customLiked(x, rnd) {
+    if (isSentence(x)) return asSentence(x);
+    var t = thing(x);
+    return pick(/^[A-Z]/.test(x)
+      ? ["Big shoutout to {t}!", "Special mention for {t}."]
+      : ["Also loved {t}.", "Special mention for {t}.", cap("{t} " + (plural(x) ? "were" : "was") + " a nice touch.")], rnd).replace("{t}", t).replace(/^the/, "The");
+  }
+  function customBetter(x, rnd, soft) {
+    if (isSentence(x)) return asSentence(x);
+    var t = thing(x);
+    var line = pick(soft
+      ? ["Only thing, {t} could be better.", "One small thing: {t} could be improved."]
+      : ["{T} could be better.", "{T} needs work.", "Would like {t} to improve."], rnd);
+    return line.replace("{T}", cap(t)).replace("{t}", t);
+  }
+
   function tierOf(stars) { return stars >= 5 ? "love" : stars === 4 ? "like" : stars === 3 ? "mixed" : "low"; }
 
   function clauses(keys, bank, rnd, max) {
@@ -318,14 +368,20 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   function once(choice, rnd) {
     var stars = choice.stars, tier = tierOf(stars), T = TONE[tier];
     var dishes = (choice.had || []).filter(function (h) { return DISH[h]; }).map(function (h) { return DISH[h]; });
+    var otherHad = clean(choice.otherHad), otherLiked = clean(choice.otherLiked), otherBetter = clean(choice.otherBetter);
+    if (otherHad) dishes.push(otherHad);
     var good = clauses(choice.liked || [], GOOD, rnd, 3);
     var bad = clauses(choice.better || [], BAD, rnd, 2);
+    var soft = tier === "love" || tier === "like";
+    var likedLine = otherLiked ? customLiked(otherLiked, rnd) : "";
+    var betterLine = otherBetter ? customBetter(otherBetter, rnd, soft && !bad.length) : "";
 
     var goodLine = good.length ? cap(list(good, rnd)) + "." : "";
     var dishLine = "";
     if (dishes.length) {
       var ds = shuffle(dishes, rnd).slice(0, 3);
-      var many = ds.length > 1 || PLURAL[ds[0]];
+      if (otherHad && ds.indexOf(otherHad) < 0) ds[ds.length - 1] = otherHad; // never drop what they typed
+      var many = ds.length > 1 || PLURAL[ds[0]] || (ds[0] === otherHad && plural(otherHad));
       dishLine = pick(T.dish, rnd)
         .replace("{d}", list(ds, rnd))
         .replace("{it}", many ? "they" : "it")
@@ -347,11 +403,13 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
 
     var middle = [];
     if (tier === "love" || tier === "like") {
-      middle = shuffle([dishLine, goodLine, extra].filter(Boolean), rnd);
+      middle = shuffle([dishLine, goodLine, likedLine, extra].filter(Boolean), rnd);
       if (badLine) middle.push(badLine);
+      if (betterLine) middle.push(betterLine);
     } else {
-      [dishLine, badLine].forEach(function (s) { if (s) middle.push(s); });
+      [dishLine, badLine, betterLine].forEach(function (s) { if (s) middle.push(s); });
       if (goodLine) middle.push(pick(tier === "mixed" ? ["On the plus side, ", "That said, ", "Good part: "] : ["That said, ", "To be fair, "], rnd) + goodLine.charAt(0).toLowerCase() + goodLine.slice(1));
+      if (likedLine) middle.push(likedLine);
       if (extra) middle.push(extra);
     }
 
@@ -383,8 +441,13 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
 
   function draft(choice, rnd) {
     rnd = rnd || Math.random;
+    // the customer's own typed words may repeat; only our wording must not
+    var ignore = {};
+    [choice.otherHad, choice.otherLiked, choice.otherBetter].forEach(function (x) {
+      (clean(x).toLowerCase().match(/[a-z']+/g) || []).forEach(function (w) { ignore[w] = 1; ignore[w.replace(/s$/, "")] = 1; });
+    });
     var text = once(choice, rnd);
-    for (var i = 0; i < 40 && (repeats(text) || places(text) > 1); i++) text = once(choice, rnd);
+    for (var i = 0; i < 40 && (repeats(text, ignore) || places(text) > 1); i++) text = once(choice, rnd);
     return text;
   }
 
@@ -408,14 +471,22 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
 
   function picked(group) {
     return Array.prototype.map.call(
-      document.querySelectorAll('.chips[data-group="' + group + '"] button[aria-pressed="true"]'),
+      document.querySelectorAll('.chips[data-group="' + group + '"] button[aria-pressed="true"]:not([data-other])'),
       function (b) { return b.textContent; });
   }
+  // what the customer typed in an "Other" box, only while that chip is on
+  function typed(group) {
+    var chip = document.querySelector('[data-other="' + group + '"]');
+    var box = document.getElementById("other-" + group);
+    return chip.getAttribute("aria-pressed") === "true" ? box.value.trim() : "";
+  }
   function ready() {
-    var any = picked("had").length + picked("liked").length + picked("better").length;
+    var any = picked("had").length + picked("liked").length + picked("better").length +
+      (typed("had") ? 1 : 0) + (typed("liked") ? 1 : 0) + (typed("better") ? 1 : 0);
     write.disabled = !(stars && any);
     hint.textContent = write.disabled ? "Pick your stars and at least one thing above." : "";
   }
+  document.querySelectorAll(".other").forEach(function (box) { box.addEventListener("input", ready); });
   starBtns.forEach(function (b) {
     b.addEventListener("click", function () {
       stars = +b.dataset.s;
@@ -430,7 +501,13 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   });
   document.querySelectorAll(".chips button").forEach(function (b) {
     b.addEventListener("click", function () {
-      b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+      var on = b.getAttribute("aria-pressed") !== "true";
+      b.setAttribute("aria-pressed", on ? "true" : "false");
+      if (b.dataset.other) {
+        var box = document.getElementById("other-" + b.dataset.other);
+        box.hidden = !on;
+        if (on) box.focus();
+      }
       ready();
     });
   });
@@ -456,7 +533,10 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   }
 
   function compose() {
-    text.value = fresh({ stars: stars, had: picked("had"), liked: picked("liked"), better: picked("better") });
+    text.value = fresh({
+      stars: stars, had: picked("had"), liked: picked("liked"), better: picked("better"),
+      otherHad: typed("had"), otherLiked: typed("liked"), otherBetter: typed("better")
+    });
     document.getElementById("n-stars").textContent = stars + (stars === 1 ? " star" : " stars");
     toast.textContent = "";
     grow();
