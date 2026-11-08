@@ -72,7 +72,7 @@ h1 .pop { color: var(--yellow); }
 
 .btn { display: block; width: 100%; text-align: center; text-decoration: none; border: 0; border-radius: 999px; padding: 13px 18px 11px; cursor: pointer; }
 .btn span { display: block; font: 800 1.2rem/1.15 var(--display); }
-.btn small { display: block; font: 500 .82rem/1.3 var(--body); opacity: .9; }
+.btn small { display: block; font: 500 .82rem/1.3 var(--body); opacity: .9; text-wrap: balance; }
 .btn-write { color: var(--night); background: var(--yellow); box-shadow: 0 6px 22px rgba(253, 241, 9, .25); }
 .btn-google { color: #fff; background: var(--red); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 8px 28px rgba(228, 41, 47, .4); }
 
@@ -109,6 +109,19 @@ h1 .pop { color: var(--yellow); }
 .card[hidden] { display: none; }
 .draft textarea { display: block; width: 100%; min-height: 150px; resize: vertical; font: 16px/1.5 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 12px; }
 #done h2 { color: var(--green); }
+#done .sub { margin-top: -6px; }
+/* the 4-tap picture guide for Google's own review page */
+.guide-wrap { display: grid; grid-gap: 12px; gap: 12px; padding-top: 4px; border-top: 1px solid var(--line); }
+.guide-title { margin: 8px 0 0; text-align: center; font-weight: 700; font-size: .95rem; color: var(--ink); }
+.guide { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-gap: 10px 8px; gap: 10px 8px; counter-reset: g; }
+.guide li { counter-increment: g; text-align: center; min-width: 0; }
+.tile { position: relative; display: block; background: #fff; border-radius: 10px; padding: 6px 4px; }
+.tile svg { display: block; width: 100%; height: auto; }
+.tile:before { content: counter(g); position: absolute; top: -8px; left: -6px; width: 20px; height: 20px; border-radius: 50%; background: var(--yellow); color: var(--night); font: 800 .75rem/20px var(--body); text-align: center; }
+.cap { display: block; margin-top: 6px; font-size: .8rem; line-height: 1.25; color: var(--muted); }
+.cap b { color: var(--ink); }
+.guide-note { margin: 0; text-align: center; font-size: .85rem; color: var(--muted); text-wrap: balance; }
+.guide-note b { color: var(--ink); white-space: nowrap; }
 .steps { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: .95rem; }
 .steps li + li { margin-top: 6px; }
 .steps b { color: var(--ink); }
@@ -126,6 +139,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   .stars button { height: 46px; margin: 0 2px; font-size: 1.9rem; }
   .chips button { padding: 8px 12px; font-size: .9rem; }
   .btn span { font-size: 1.08rem; }
+  .guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: no-preference) {
   .chips button, .stars button { transition: background-color .12s, color .12s, border-color .12s; }
@@ -199,18 +213,36 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
 
     <a class="btn btn-write" id="write" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>&#10024; Write my review</span><small>We write it, copy it and open Google. You paste it there.</small></a>
     <p class="hint" id="hint" aria-live="polite">Pick your stars and at least one thing above.</p>
+
+    <!-- what Google's page needs, in pictures: Google never lets a website fill it in -->
+    <div class="guide-wrap">
+      <p class="guide-title">Then on Google, 4 quick taps:</p>
+      <ol class="guide">
+        <li>
+          <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap the stars"><polygon points="10.5,17.7 12.2,21.9 16.8,22.3 13.3,25.2 14.4,29.6 10.5,27.2 6.6,29.6 7.7,25.2 4.2,22.3 8.8,21.9" fill="#fbbc04"/><polygon points="24.5,17.7 26.2,21.9 30.8,22.3 27.3,25.2 28.4,29.6 24.5,27.2 20.6,29.6 21.7,25.2 18.2,22.3 22.8,21.9" fill="#fbbc04"/><polygon points="38.5,17.7 40.2,21.9 44.8,22.3 41.3,25.2 42.4,29.6 38.5,27.2 34.6,29.6 35.7,25.2 32.2,22.3 36.8,21.9" fill="#fbbc04"/><polygon points="52.5,17.7 54.2,21.9 58.8,22.3 55.3,25.2 56.4,29.6 52.5,27.2 48.6,29.6 49.7,25.2 46.2,22.3 50.8,21.9" fill="#fbbc04"/><polygon points="66.5,17.7 68.2,21.9 72.8,22.3 69.3,25.2 70.4,29.6 66.5,27.2 62.6,29.6 63.7,25.2 60.2,22.3 64.8,21.9" fill="#fbbc04"/><circle cx="66.5" cy="23.6" r="9.2" fill="none" stroke="#1a73e8" stroke-width="1.6" opacity=".75"/></svg></span>
+          <span class="cap">Tap <b id="g-stars">your</b> stars</span>
+        </li>
+        <li>
+          <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap the empty review box"><rect x="6" y="10" width="68" height="28" rx="6" fill="#fff" stroke="#9aa0a6" stroke-width="1.5"/><line x1="13" y1="17" x2="13" y2="31" stroke="#1a73e8" stroke-width="1.6"/><circle cx="44" cy="24" r="9" fill="rgba(26,115,232,.15)" stroke="#1a73e8" stroke-width="1.6"/></svg></span>
+          <span class="cap">Tap the box</span>
+        </li>
+        <li>
+          <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap Paste and your review appears"><rect x="20" y="1" width="40" height="17" rx="5" fill="#202124"/><path d="M36 18 L44 18 L40 22 Z" fill="#202124"/><text x="40" y="13" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="10" font-weight="700" fill="#fff">Paste</text><rect x="6" y="24" width="68" height="21" rx="5" fill="#fff" stroke="#9aa0a6" stroke-width="1.5"/><rect x="12" y="30" width="46" height="3.4" rx="1.7" fill="#bdc1c6"/><rect x="12" y="37" width="30" height="3.4" rx="1.7" fill="#bdc1c6"/></svg></span>
+          <span class="cap">Tap Paste</span>
+        </li>
+        <li>
+          <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap Post"><rect x="12" y="13" width="56" height="22" rx="11" fill="#1a73e8"/><text x="40" y="28" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="11.5" font-weight="700" fill="#fff">Post</text></svg></span>
+          <span class="cap">Tap Post</span>
+        </li>
+      </ol>
+      <p class="guide-note">&#128247; Got food pics? Tap <b>Add photos</b> on Google before Post.</p>
+    </div>
   </section>
 
   <!-- shown after the tap, for when they come back to this tab -->
   <section class="card" id="done" aria-labelledby="done-title" hidden>
     <h2 id="done-title">Review copied!</h2>
-    <ol class="steps">
-      <li>On Google, tap <b id="n-stars">your stars</b>.</li>
-      <li>Tap the box and <b>Paste</b>.</li>
-      <li>&#128247; <b>Add photos</b> of your food (optional).</li>
-      <li>Tap <b>Post</b>. Shukriya!</li>
-    </ol>
-    <p class="sub">Google didn't open? <a id="reopen" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener">Open it here</a>. Want a different review? Tap Write my review again.</p>
+    <p class="sub">Paste it on Google with the 4 taps above. Google didn't open? <a id="reopen" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener">Open it here</a>. Want a different review? Tap Write my review again.</p>
   </section>
 
   <!-- only if the phone refuses to copy: show the text to copy by hand -->
@@ -515,7 +547,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       (typed("had") ? 1 : 0) + (typed("liked") ? 1 : 0) + (typed("better") ? 1 : 0);
   }
   function ready() {
-    if (stars && anyPicked()) { hint.textContent = "All set! On Google: tap " + stars + (stars === 1 ? " star" : " stars") + ", then Paste and Post."; hint.className = "hint"; }
+    if (stars && anyPicked()) { hint.textContent = "All set! Tap Write my review."; hint.className = "hint"; }
     else { hint.textContent = "Pick your stars and at least one thing above."; hint.className = "hint"; }
   }
   // briefly light up the part that still needs a tap
@@ -538,6 +570,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
         x.setAttribute("aria-pressed", n === stars ? "true" : "false");
       });
       document.getElementById("star-label").textContent = LABELS[stars];
+      document.getElementById("g-stars").textContent = String(stars); // "Tap 5 stars" in the guide
       ready();
     });
   });
@@ -587,7 +620,6 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       stars: stars, had: picked("had"), liked: picked("liked"), better: picked("better"),
       otherHad: typed("had"), otherLiked: typed("liked"), otherBetter: typed("better")
     });
-    document.getElementById("n-stars").textContent = stars + (stars === 1 ? " star" : " stars");
     if (!copyText(review)) {
       // this phone won't copy from a web page: show the text to copy by hand
       e.preventDefault();
