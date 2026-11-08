@@ -82,8 +82,6 @@ h1 .pop { color: var(--yellow); }
 .card h2:before, .card h2:after { content: ""; flex: 0 0 14px; width: 14px; height: 3px; border-radius: 2px; background: var(--red); }
 .card h2:before { margin-right: 10px; }
 .card h2:after { margin-left: 10px; }
-.step { display: inline-block; font: 700 .72rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); text-align: center; }
-.sub { margin: -10px 0 0; color: var(--muted); font-size: .92rem; text-align: center; }
 .group-label { font: 700 .78rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; margin: 0 0 10px; }
 .had .group-label { color: var(--orange); }
 .liked .group-label { color: var(--green); }
@@ -103,9 +101,14 @@ h1 .pop { color: var(--yellow); }
 /* a short glow on the part that still needs a tap */
 .nudge { border-radius: 14px; box-shadow: 0 0 0 2px var(--yellow); }
 .card[hidden] { display: none; }
-.draft textarea { display: block; width: 100%; min-height: 150px; resize: vertical; font: 16px/1.5 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 12px; }
-#done h2 { color: var(--green); }
-#done .sub { margin-top: -6px; }
+/* the review, shown before anything is copied or opened */
+.review { display: block; width: 100%; resize: none; overflow: hidden; font: 16px/1.55 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--line); border-left: 4px solid var(--yellow); border-radius: 12px; padding: 12px 14px; }
+.btn-again { display: block; margin: -4px auto 0; min-height: 44px; padding: 10px 22px; border: 1.5px solid var(--cyan); border-radius: 999px; background: transparent; color: var(--cyan); font: 700 1rem/1.2 var(--body); cursor: pointer; }
+.status { margin: -4px 0 0; text-align: center; font-size: .9rem; color: var(--muted); text-wrap: balance; }
+.status:empty { display: none; }
+.status.ok { color: var(--green); font-weight: 600; }
+.status.warn { color: #ffd166; font-weight: 600; }
+.status a { color: var(--cyan); }
 /* the 4-tap picture guide for Google's own review page */
 .guide-wrap { display: grid; grid-gap: 12px; gap: 12px; padding-top: 4px; border-top: 1px solid var(--line); }
 .guide-title { margin: 8px 0 0; text-align: center; font-weight: 700; font-size: .95rem; color: var(--ink); }
@@ -118,10 +121,6 @@ h1 .pop { color: var(--yellow); }
 .cap b { color: var(--ink); }
 .guide-note { margin: 0; text-align: center; font-size: .85rem; color: var(--muted); text-wrap: balance; }
 .guide-note b { color: var(--ink); white-space: nowrap; }
-.steps { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: .95rem; }
-.steps li + li { margin-top: 6px; }
-.steps b { color: var(--ink); }
-.sub a { color: var(--cyan); }
 .honest { margin: 0; font-size: .9rem; color: var(--muted); text-align: center; }
 .honest b { color: var(--ink); }
 footer { text-align: center; color: var(--muted); font-size: .8rem; }
@@ -197,6 +196,16 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       <input class="other" id="other-better" type="text" maxlength="60" autocomplete="off" autocorrect="on" autocapitalize="sentences" enterkeyhint="done" placeholder="Type what could be better" aria-label="Type what could be better" hidden>
     </div>
 
+    <button type="button" class="btn btn-write" id="write"><span>&#10024; Write my review</span></button>
+    <p class="hint" id="hint" aria-live="polite">Pick at least one thing above.</p>
+  </section>
+
+  <!-- the review comes first: nothing is copied and Google doesn't open until they like it -->
+  <section class="card" id="preview" aria-labelledby="pv-title" hidden>
+    <h2 id="pv-title">Your review</h2>
+    <textarea class="review" id="text" rows="2" readonly aria-labelledby="pv-title"></textarea>
+    <button type="button" class="btn-again" id="again">&#8635; Write another</button>
+
     <!-- what Google's page needs, in pictures: Google never lets a website fill it in -->
     <div class="guide-wrap">
       <p class="guide-title">On Google, just 4 quick taps:</p>
@@ -221,23 +230,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       <p class="guide-note">&#128247; Got food pics? Tap <b>Add photos</b> on Google before Post.</p>
     </div>
 
-    <a class="btn btn-write" id="write" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>&#10024; Write my review</span><small>We write it, copy it and open Google. You paste it there.</small></a>
-    <p class="hint" id="hint" aria-live="polite">Pick at least one thing above.</p>
-  </section>
-
-  <!-- shown after the tap, for when they come back to this tab -->
-  <section class="card" id="done" aria-labelledby="done-title" hidden>
-    <h2 id="done-title">Review copied!</h2>
-    <p class="sub">Paste it on Google with the 4 taps above. Google didn't open? <a id="reopen" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener">Open it here</a>. Want a different review? Tap Write my review again.</p>
-  </section>
-
-  <!-- only if the phone refuses to copy: show the text to copy by hand -->
-  <section class="card draft" id="fallback" aria-labelledby="fb-title" hidden>
-    <h2 id="fb-title">Copy your review</h2>
-    <p class="sub">Your phone didn't let us copy it. Press and hold the text, tap Select All, then Copy.</p>
-    <label for="text" style="position:absolute;left:-9999px">Review text</label>
-    <textarea id="text" rows="6" readonly></textarea>
-    <a class="btn btn-google" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Open Google reviews</span></a>
+    <a class="btn btn-google" id="post" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Copy &amp; open Google</span></a>
+    <p class="status" id="status" aria-live="polite"></p>
   </section>
 
   <p class="honest"><b>Something not right?</b> Tell us honestly on Google, or ask for Chirag at the counter. We read every review.</p>
@@ -519,9 +513,13 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   function go(el) { try { el.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { el.scrollIntoView(true); } }
   var write = document.getElementById("write");
   var hint = document.getElementById("hint");
-  var doneCard = document.getElementById("done");
-  var fallbackCard = document.getElementById("fallback");
+  var preview = document.getElementById("preview");
   var text = document.getElementById("text");
+  var again = document.getElementById("again");
+  var post = document.getElementById("post");
+  var note = document.getElementById("status");
+  var GOOGLE = post.getAttribute("href");
+  var review = "";
 
   function picked(group) {
     return all('.chips[data-group="' + group + '"] button[aria-pressed="true"]')
@@ -588,27 +586,53 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     return t;
   }
 
-  // One tap does it all: write a fresh review, copy it, and let the link open
-  // Google's review page. Google never lets a website type into its review box,
-  // so the customer pastes it there (one tap on most keyboards) and posts.
-  write.addEventListener("click", function (e) {
-    // never a dead button: say what's missing and take them there
-    if (!anyPicked()) { e.preventDefault(); hint.textContent = "Tap at least one thing you had or liked."; hint.className = "hint warn"; var h = document.getElementById("had-block"); go(h); nudge(h); return; }
-    var review = fresh({
+  function choice() {
+    return {
       had: picked("had"), liked: picked("liked"), better: picked("better"),
       otherHad: typed("had"), otherLiked: typed("liked"), otherBetter: typed("better")
-    });
+    };
+  }
+  // never a dead button: say what's missing and take them there
+  function needPicks() {
+    if (anyPicked()) return false;
+    hint.textContent = "Tap at least one thing you had or liked."; hint.className = "hint warn";
+    var h = document.getElementById("had-block"); go(h); nudge(h);
+    return true;
+  }
+  // The review comes first. Nothing is copied and Google doesn't open until
+  // they like it; Write another swaps in a fresh one from the same picks.
+  function show() {
+    review = fresh(choice());
+    text.value = review;
+    preview.hidden = false;
+    text.style.height = "auto";
+    text.style.height = text.scrollHeight + 4 + "px"; // the whole review, no scrolling inside the box
+    note.textContent = ""; note.className = "status";
+  }
+  write.addEventListener("click", function () {
+    if (needPicks()) return;
+    show();
+    go(preview);
+  });
+  again.addEventListener("click", function () {
+    if (needPicks()) return;
+    show();
+    nudge(text);
+  });
+
+  // Happy with it: copy it and open Google's review page in the same tap.
+  // Google never lets a website type into its review box, so they paste it.
+  post.addEventListener("click", function (e) {
+    if (!review) { e.preventDefault(); return; }
     if (!copyText(review)) {
-      // this phone won't copy from a web page: show the text to copy by hand
+      // this phone won't copy from a web page: copy by hand, then open Google
       e.preventDefault();
-      text.value = review;
-      doneCard.hidden = true;
-      fallbackCard.hidden = false;
-      go(fallbackCard);
+      note.innerHTML = "Your phone didn't let us copy it. Press and hold the review, tap <b>Select All</b>, then <b>Copy</b>, and <a href='" + GOOGLE + "' target='_blank' rel='noopener'>open Google</a>.";
+      note.className = "status warn";
       return;
     }
-    fallbackCard.hidden = true;
-    doneCard.hidden = false; // waiting here for when they come back from Google
+    note.innerHTML = "Copied! Paste it on Google. Google didn't open? <a href='" + GOOGLE + "' target='_blank' rel='noopener'>Open it here</a>.";
+    note.className = "status ok";
   });
 
   // Copy that works on every phone. The old-style copy runs instantly inside
