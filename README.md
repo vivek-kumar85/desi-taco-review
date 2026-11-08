@@ -43,3 +43,11 @@ python tools/make_qr_card.py Desi_Taco_review_QR.pdf src/logo_source.png https:/
 ```
 
 Page 1 is the A6 counter card (opens this page); page 2 is a sheet of 12 bag stickers (open Google's review form directly). Needs Python with Pillow, reportlab and PyMuPDF, and the Segoe UI fonts that come with Windows.
+
+## The QR standee
+
+```bash
+python tools/make_standee.py standee_out src/logo_source.png https://desitaco.arthproductionhouse.com/
+```
+
+A Paytm / Google Pay style counter standee in the logo's neon look: `Desi_Taco_QR_Standee_A5_print.pdf` and `..._A4_print.pdf` (exact trim, 3 mm bleed, crop marks) for a print shop, and `Desi_Taco_QR_Standee.png` (A5 at 300 dpi) as the soft copy. Fonts are Baloo 2 from Google Fonts (`tools/fonts/`, SIL Open Font License, see `OFL.txt`). Needs Python with reportlab and PyMuPDF.
