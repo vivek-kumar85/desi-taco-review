@@ -1,0 +1,15 @@
+// Cloudflare setup for the review page: plain files from public/, plus the tiny
+// worker/index.js that keeps every review unique (fingerprints kept in D1).
+// Deploy from the repo folder:  npx wrangler@4.152.0 deploy
+{
+  "name": "desi-taco",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [{ "pattern": "desitaco.arthproductionhouse.com", "custom_domain": true }],
+  "assets": { "directory": "./public", "binding": "ASSETS" },
+  "d1_databases": [
+    { "binding": "DB", "database_name": "desi-taco-reviews", "database_id": "47be7c9e-5ee6-4c0b-ba48-6ef6d2ecf52c" }
+  ]
+}

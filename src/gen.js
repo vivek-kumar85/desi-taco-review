@@ -143,7 +143,7 @@
   function customBetter(x, rnd, soft) {
     if (isSentence(x)) return asSentence(x);
     // a request in their own words ("more sauce please") stays as they wrote it
-    if (/^(more|less|add|extra|bigger|smaller|faster|cheaper|some|please)|please/i.test(x)) return (soft ? pick(["Only thing: ", "One small request: "], rnd) + x : cap(x)) + ".";
+    if (/^(more|less|add|extra|bigger|smaller|faster|cheaper|some|please)\b|\bplease\b/i.test(x)) return (soft ? pick(["Only thing: ", "One small request: "], rnd) + x : cap(x)) + ".";
     var t = thing(x);
     var line = pick(soft
       ? ["Only thing, {t} could be better.", "One small thing: {t} could be improved."]

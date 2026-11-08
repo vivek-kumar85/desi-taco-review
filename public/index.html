@@ -104,6 +104,7 @@ h1 .pop { color: var(--yellow); }
 /* the review, shown before anything is copied or opened */
 .review { display: block; width: 100%; resize: none; overflow: hidden; font: 16px/1.55 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--line); border-left: 4px solid var(--yellow); border-radius: 12px; padding: 12px 14px; }
 .btn-again { display: block; margin: -4px auto 0; min-height: 44px; padding: 10px 22px; border: 1.5px solid var(--cyan); border-radius: 999px; background: transparent; color: var(--cyan); font: 700 1rem/1.2 var(--body); cursor: pointer; }
+.btn:disabled, .btn-again:disabled { opacity: .65; cursor: progress; }
 .status { margin: -4px 0 0; text-align: center; font-size: .9rem; color: var(--muted); text-wrap: balance; }
 .status:empty { display: none; }
 .status.ok { color: var(--green); font-weight: 600; }
@@ -385,7 +386,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   function customBetter(x, rnd, soft) {
     if (isSentence(x)) return asSentence(x);
     // a request in their own words ("more sauce please") stays as they wrote it
-    if (/^(more|less|add|extra|bigger|smaller|faster|cheaper|some|please)|please/i.test(x)) return (soft ? pick(["Only thing: ", "One small request: "], rnd) + x : cap(x)) + ".";
+    if (/^(more|less|add|extra|bigger|smaller|faster|cheaper|some|please)\b|\bplease\b/i.test(x)) return (soft ? pick(["Only thing: ", "One small request: "], rnd) + x : cap(x)) + ".";
     var t = thing(x);
     var line = pick(soft
       ? ["Only thing, {t} could be better.", "One small thing: {t} could be improved."]
@@ -575,15 +576,40 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     if (seen.length > 300) seen = seen.slice(-300);
     try { localStorage.setItem(KEY, JSON.stringify(seen)); } catch (e) { /* private mode: in-page memory still works */ }
   }
-  function fresh(choice) {
-    var t = "", h = "";
+  // a draft this phone has never shown, and not one of `also`
+  function candidate(c, also) {
+    var t = "";
     for (var i = 0; i < 40; i++) {
-      t = window.ReviewDraft.draft(choice);
-      h = hash(t);
-      if (seen.indexOf(h) < 0) break;
+      t = window.ReviewDraft.draft(c);
+      if (seen.indexOf(hash(t)) < 0 && also.indexOf(t) < 0) break;
     }
-    remember(h);
     return t;
+  }
+
+  // Unique for everyone, not just this phone: Cloudflare keeps a fingerprint of
+  // every review ever shown (a SHA-256 code of its words, never the text) and
+  // hands each review out once. If that check can't be reached, the page still
+  // works with this phone's own memory.
+  // letters and digits in any language (built without a backslash in the source,
+  // so nothing can mangle it); old phones fall back to a-z and 0-9
+  var NOT_WORD = (function () { var bs = String.fromCharCode(92); try { return new RegExp("[^" + bs + "p{L}" + bs + "p{N}]+", "gu"); } catch (e) { return /[^a-z0-9]+/g; } })();
+  function words(t) { return t.toLowerCase().replace(NOT_WORD, " ").replace(/^\s+|\s+$/g, ""); }
+  function fingerprint(t) {
+    return crypto.subtle.digest("SHA-256", new TextEncoder().encode(words(t))).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ("0" + b.toString(16)).slice(-2); }).join("");
+    });
+  }
+  // done(i): i = the first draft in `list` nobody has had (now theirs), -1 if all
+  // were taken, null if we couldn't check
+  function claim(list, done) {
+    var finished = false;
+    function end(i) { if (!finished) { finished = true; done(i); } }
+    if (!window.fetch || !window.Promise || !window.TextEncoder || !window.crypto || !crypto.subtle) return end(null);
+    setTimeout(function () { end(null); }, 3000); // slow network: never keep them waiting
+    Promise.all(list.map(fingerprint)).then(function (hs) {
+      return fetch("/api/claim", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ hs: hs }) });
+    }).then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { end(d && typeof d.i === "number" ? d.i : null); }, function () { end(null); });
   }
 
   function choice() {
@@ -601,29 +627,49 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   }
   // The review comes first. Nothing is copied and Google doesn't open until
   // they like it; Write another swaps in a fresh one from the same picks.
-  function show() {
-    review = fresh(choice());
-    text.value = review;
-    preview.hidden = false;
-    text.style.height = "auto";
-    text.style.height = text.scrollHeight + 4 + "px"; // the whole review, no scrolling inside the box
-    note.textContent = ""; note.className = "status";
+  var busy = false;
+  function show(after) {
+    if (busy) return;
+    busy = true;
+    write.disabled = again.disabled = true;
+    var label = again.innerHTML;
+    if (preview.hidden) { hint.textContent = "Writing your review\u2026"; hint.className = "hint"; }
+    else again.textContent = "Writing\u2026";
+    var c = choice(), rounds = 0;
+    (function round() {
+      var list = [];
+      for (var k = 0; k < 3; k++) list.push(candidate(c, list));
+      claim(list, function (i) {
+        if (i === -1 && ++rounds < 3) return round(); // all three already went to other people: three more
+        var t = list[i > 0 ? i : 0];
+        remember(hash(t));
+        review = t;
+        text.value = t;
+        preview.hidden = false;
+        text.style.height = "auto";
+        text.style.height = text.scrollHeight + 4 + "px"; // the whole review, no scrolling inside the box
+        note.textContent = ""; note.className = "status";
+        again.innerHTML = label;
+        write.disabled = again.disabled = false;
+        busy = false;
+        ready();
+        if (after) after();
+      });
+    })();
   }
   write.addEventListener("click", function () {
     if (needPicks()) return;
-    show();
-    go(preview);
+    show(function () { go(preview); });
   });
   again.addEventListener("click", function () {
     if (needPicks()) return;
-    show();
-    nudge(text);
+    show(function () { nudge(text); });
   });
 
   // Happy with it: copy it and open Google's review page in the same tap.
   // Google never lets a website type into its review box, so they paste it.
   post.addEventListener("click", function (e) {
-    if (!review) { e.preventDefault(); return; }
+    if (!review || busy) { e.preventDefault(); return; } // nothing yet, or a new one is still being written
     if (!copyText(review)) {
       // this phone won't copy from a web page: copy by hand, then open Google
       e.preventDefault();

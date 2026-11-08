@@ -2,7 +2,7 @@
 
     python src/build.py
 
-Writes, at the repo root (what Vercel serves):
+Writes into public/ (what Cloudflare serves at desitaco.arthproductionhouse.com):
   index.html            template.html with gen.js inlined
   logo.webp / logo.png  the round logo (WebP for new phones, PNG for old iPhones)
   favicon.png           browser tab icon
@@ -13,7 +13,7 @@ from pathlib import Path
 from PIL import Image
 
 SRC = Path(__file__).resolve().parent
-OUT = SRC.parent
+OUT = SRC.parent / "public"
 NAVY = (11, 18, 48, 255)
 
 
@@ -39,6 +39,7 @@ def build_page():
 
 
 if __name__ == "__main__":
+    OUT.mkdir(exist_ok=True)
     build_images()
     size = build_page()
     for name in ("index.html", "logo.webp", "logo.png", "favicon.png", "apple-touch-icon.png"):
