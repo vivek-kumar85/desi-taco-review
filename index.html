@@ -70,15 +70,11 @@ h1 .pop { color: var(--yellow); }
 .lede { margin: 0; color: var(--muted); max-width: 34em; }
 .lede b { color: var(--yellow); }
 
-/* the two ways in, right on the first screen */
-.choices { display: grid; grid-gap: 10px; gap: 10px; }
 .btn { display: block; width: 100%; text-align: center; text-decoration: none; border: 0; border-radius: 999px; padding: 13px 18px 11px; cursor: pointer; }
 .btn span { display: block; font: 800 1.2rem/1.15 var(--display); }
 .btn small { display: block; font: 500 .82rem/1.3 var(--body); opacity: .9; }
 .btn-write { color: var(--night); background: var(--yellow); box-shadow: 0 6px 22px rgba(253, 241, 9, .25); }
 .btn-google { color: #fff; background: var(--red); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 8px 28px rgba(228, 41, 47, .4); }
-.btn-plain { color: var(--ink); background: transparent; border: 1.5px solid rgba(228, 41, 47, .85); box-shadow: none; padding: 11px 18px 9px; }
-.btn-plain span { font-size: 1.05rem; }
 
 .card { background: var(--night-2); border: 1px solid var(--line); border-radius: 18px; padding: 18px 16px; display: grid; grid-gap: 16px; gap: 16px; min-width: 0; }
 .card h2 { font: 700 1.3rem/1.1 var(--display); margin: 0; display: flex; align-items: center; justify-content: center; text-align: center; }
@@ -112,9 +108,6 @@ h1 .pop { color: var(--yellow); }
 .nudge { border-radius: 14px; box-shadow: 0 0 0 2px var(--yellow); }
 .draft[hidden] { display: none; }
 .draft textarea { display: block; width: 100%; min-height: 140px; resize: vertical; font: 16px/1.5 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 12px; }
-.row { display: flex; flex-wrap: wrap; justify-content: center; margin: -5px; }
-.row button { margin: 5px; }
-.ghost { font: 600 .95rem/1 var(--body); color: var(--ink); background: transparent; border: 1.5px solid rgba(11, 183, 233, .7); border-radius: 999px; padding: 11px 16px; cursor: pointer; min-height: 44px; }
 .then { margin: 0 0 -8px; font-weight: 700; color: var(--ink); font-size: .95rem; }
 .steps { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: .92rem; }
 .steps li + li { margin-top: 4px; }
@@ -144,13 +137,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   <header class="hero">
     <div class="logo"><picture><source type="image/webp" srcset="logo.webp"><img src="logo.png" width="128" height="128" alt="The Desi Taco Co."></picture></div>
     <h1>Thanks for coming <span class="pop">by!</span></h1>
-    <p class="lede">A Google review really helps our small kitchen. Pick a few things and we'll write it for you. <b>Takes 30 seconds.</b></p>
+    <p class="lede">Tap your stars and what you had, and we'll write your Google review for you. <b>Takes 30 seconds.</b></p>
   </header>
-
-  <div class="choices">
-    <button type="button" class="btn btn-write" id="start"><span>&#10024; Help me write my review</span><small>Pick your stars and what you had, we write it</small></button>
-    <a class="btn btn-plain" id="direct" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Open Google reviews</span><small>I'll write it myself</small></a>
-  </div>
 
   <section class="card" id="form" aria-labelledby="rate">
     <h2 id="rate">How was it?</h2>
@@ -215,18 +203,14 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
 
   <section class="card draft" id="draft" aria-labelledby="draft-title" hidden>
     <h2 id="draft-title">Your review</h2>
-    <p class="sub">Edit anything you like. It's your review.</p>
+    <p class="sub">Edit anything you like. Want a different one? Tap Write my review again.</p>
     <label for="text" style="position:absolute;left:-9999px">Review text</label>
     <textarea id="text" rows="5" autocapitalize="sentences"></textarea>
-    <div class="row">
-      <button type="button" class="ghost" id="again">Write another</button>
-      <button type="button" class="ghost" id="copy">Copy text</button>
-    </div>
     <a class="btn btn-google" id="cta" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Copy &amp; open Google</span><small>Copies your review and opens Google's review page</small></a>
     <p class="toast" id="toast" aria-live="polite"></p>
     <p class="then">Then on Google:</p>
     <ol class="steps">
-      <li>Tap <b id="n-stars">the same stars</b> (sign in if it asks).</li>
+      <li>Tap <b id="n-stars">the same stars</b>.</li>
       <li>Press and hold the text box and tap <b>Paste</b>.</li>
       <li>Got food pics? Tap <b>Add photos</b> and pick them.</li>
       <li>Tap <b>Post</b>. Done, shukriya!</li>
@@ -535,8 +519,6 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     setTimeout(function () { el.className = el.className.replace(/\s*nudge/g, ""); }, 1600);
   }
 
-  document.getElementById("start").addEventListener("click", function () { go(document.getElementById("form")); });
-
   all(".other").forEach(function (box) {
     box.addEventListener("input", ready);
     // the keyboard's Done/Enter closes the keyboard instead of doing nothing
@@ -612,7 +594,6 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     grow(); // measure again now that the box is visible
     go(draftCard);
   });
-  document.getElementById("again").addEventListener("click", compose);
 
   // Copy that works on every phone. The old-style copy runs instantly inside
   // the tap, so it finishes even when iPhone switches to the Google tab right
@@ -654,7 +635,6 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     toast.textContent = ok ? "Copied! Now paste it on Google." : "Press and hold the text above, tap Select All, then Copy.";
     return ok;
   }
-  document.getElementById("copy").addEventListener("click", copyNow);
   document.getElementById("cta").addEventListener("click", copyNow); // then the link opens Google as normal
 })();
 </script>
