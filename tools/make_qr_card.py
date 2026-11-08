@@ -105,7 +105,7 @@ def counter_card(c):
     qr(c, cx - q / 2, ty + 4 * mm, q, CARD_URL)
 
     centred(c, "Point your phone camera here", "UIB", 9.5, ty - 5.5 * mm, cx, CYAN)
-    tip = ("Pick your stars and we'll help you write it!" if VIA_HELPER
+    tip = ("Tap what you had and we'll help you write it!" if VIA_HELPER
            else "Just tap the stars. A line about what you ate is a bonus!")
     centred(c, tip, "UI", 8, ty - 10 * mm, cx, MUTED)
     centred(c, CARD_SHORT, "UI", 6.5, ty - 14 * mm, cx, MUTED)

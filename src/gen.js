@@ -1,8 +1,10 @@
 /* Review draft writer for The Desi Taco Co.
-   Builds a short draft ONLY from what the customer picked: their own star
-   rating, what they had, what they liked and what could be better. It invents
-   no facts (no companions, no names, no visit counts) and the tone follows the
-   stars, so a 3-star pick never reads like a 5-star review.
+   Builds a short draft ONLY from what the customer picked: what they had,
+   what they liked and what could be better. It invents no facts (no
+   companions, no names, no visit counts). There is no star rating here (the
+   customer gives their stars once, on Google), so the tone follows the picks:
+   only good things make a happy review, "could be better" picks make it
+   balanced, and the food is never called good or bad unless they said so.
    Every draft is mixed at random from large phrase banks, sentence orders,
    punctuation and sign-offs, so two people rarely get the same text; the page
    also remembers recent drafts on each phone and never shows one twice. */
@@ -48,9 +50,9 @@
   var BAD = {
     "Waiting time": ["the wait was a bit long", "I had to wait longer than expected", "the order took a while", "it took quite long to get the food", "the service was slow"],
     "Too spicy": ["it was a bit too spicy for me", "the spice was too much for me", "it was too hot for my taste", "the masala was too strong for me", "it was way too spicy"],
-    "Not spicy enough": ["it could have used more spice", "I wanted a bit more heat", "it was a bit mild for me", "the flavours felt a bit flat", "it needed more masala"],
+    "Not spicy enough": ["it could have used more spice", "I wanted a bit more heat", "it was a bit mild for me", "I'd have liked it spicier", "it needed more masala"],
     "Small portions": ["portions could be bigger", "the portion felt small", "I was still a bit hungry after", "the quantity was less", "it wasn't very filling"],
-    "Price": ["it felt a little pricey", "a bit expensive for the size", "prices could be a little lower", "it felt overpriced", "the prices are on the higher side"],
+    "Price": ["it felt a little pricey", "it's a bit expensive for the size", "prices could be a little lower", "it felt overpriced", "the prices are on the higher side"],
     "Seating": ["seating is limited", "there wasn't much space to sit", "it gets crowded with few seats", "it was hard to find a place to sit", "there's very little seating"],
     "Parking": ["parking was tricky", "finding parking took a while", "parking nearby is hard to find", "there's no easy parking", "parking is a headache"]
   };
@@ -80,14 +82,6 @@
       extra: ["The idea is interesting.", "Nice concept.", "The menu has some good ideas.", "Interesting idea, desi flavours in tacos."],
       close: ["I might give it another try.", "Hope it's better next time.", "It could be great with a few fixes.", "Might come back to try something else.", "Has potential."],
       emoji: []
-    },
-    low: {
-      open: ["Not a great experience this time.", "I expected more, honestly.", "It didn't quite work for me this time.", "Disappointed with this visit.", "Wasn't what I hoped for.", "Not impressed this time.", "Left a bit let down.", "Could have been much better.", "Not the experience I hoped for."],
-      adj: ["not great", "not up to the mark", "disappointing", "below expectations", "underwhelming"],
-      dish: ["The {d} {was} {a}.", "I had the {d} but {it} {was} {a}.", "Ordered the {d} and {it} {was} {a}."],
-      extra: ["Maybe it was an off day.", "The concept is nice though.", "The idea has potential."],
-      close: ["Hope they improve.", "I'm not sure I'd go back soon.", "Hoping for better next time.", "Needs some work.", "Might not return for a while.", "Will see if it gets better.", "Hope this feedback helps."],
-      emoji: []
     }
   };
 
@@ -113,8 +107,7 @@
   var FOOD_LINE = {
     love: ["Desi flavours in a taco just work.", "Proper desi tacos with real Indian flavours.", "Mexican food with a proper Indian twist."],
     like: ["Nice twist on regular tacos.", "Good Mexican food with an Indian twist."],
-    mixed: ["Interesting idea, desi flavours in tacos."],
-    low: ["Expected better from a taco place."]
+    mixed: ["Interesting idea, desi flavours in tacos."]
   };
   function places(text) { return (text.match(PLACE) || []).length; }
 
@@ -149,6 +142,8 @@
   }
   function customBetter(x, rnd, soft) {
     if (isSentence(x)) return asSentence(x);
+    // a request in their own words ("more sauce please") stays as they wrote it
+    if (/^(more|less|add|extra|bigger|smaller|faster|cheaper|some|please)|please/i.test(x)) return (soft ? pick(["Only thing: ", "One small request: "], rnd) + x : cap(x)) + ".";
     var t = thing(x);
     var line = pick(soft
       ? ["Only thing, {t} could be better.", "One small thing: {t} could be improved."]
@@ -156,7 +151,18 @@
     return line.replace("{T}", cap(t)).replace("{t}", t);
   }
 
-  function tierOf(stars) { return stars >= 5 ? "love" : stars === 4 ? "like" : stars === 3 ? "mixed" : "low"; }
+  // Tone from the picks, never from a rating: nothing to improve reads happy
+  // (mostly very happy), one thing to improve reads happy with a small note,
+  // and more complaints than likes reads balanced.
+  function toneOf(choice, rnd) {
+    var liked = (choice.liked || []).filter(function (k) { return GOOD[k]; }).length + (clean(choice.otherLiked) ? 1 : 0);
+    var better = (choice.better || []).filter(function (k) { return BAD[k]; }).length + (clean(choice.otherBetter) ? 1 : 0);
+    if (!better) return rnd() < 0.7 ? "love" : "like";
+    if (better === 1) return liked >= 2 && rnd() < 0.5 ? "love" : "like";
+    return liked >= better ? "like" : "mixed";
+  }
+  // a plain mention of the dish, for when we can't tell how the food itself was
+  var PLAIN_DISH = ["I had the {d}.", "Tried the {d}.", "Ordered the {d}.", "Went for the {d}.", "Had the {d} this time."];
 
   function clauses(keys, bank, rnd, max) {
     var out = [];
@@ -165,7 +171,7 @@
   }
 
   function once(choice, rnd) {
-    var stars = choice.stars, tier = tierOf(stars), T = TONE[tier];
+    var tier = toneOf(choice, rnd), T = TONE[tier];
     var dishes = (choice.had || []).filter(function (h) { return DISH[h]; }).map(function (h) { return DISH[h]; });
     var otherHad = clean(choice.otherHad), otherLiked = clean(choice.otherLiked), otherBetter = clean(choice.otherBetter);
     if (otherHad) dishes.push(otherHad);
@@ -176,19 +182,22 @@
     var betterLine = otherBetter ? customBetter(otherBetter, rnd, soft && !bad.length) : "";
 
     var goodLine = good.length ? cap(list(good, rnd)) + "." : "";
+    // no verdict on the food when the review is balanced or their own words
+    // could be about the food ("taste was bland" next to "it was tasty")
+    var plain = tier === "mixed" || !!otherBetter;
     var dishLine = "";
     if (dishes.length) {
       var ds = shuffle(dishes, rnd).slice(0, 3);
       if (otherHad && ds.indexOf(otherHad) < 0) ds[ds.length - 1] = otherHad; // never drop what they typed
       var many = ds.length > 1 || PLURAL[ds[0]] || (ds[0] === otherHad && plural(otherHad));
-      dishLine = pick(T.dish, rnd)
+      dishLine = pick(plain ? PLAIN_DISH : T.dish, rnd)
         .replace("{d}", list(ds, rnd))
         .replace("{it}", many ? "they" : "it")
         .replace("{was}", many ? "were" : "was")
         .replace("{is}", many ? "are" : "is")
         .replace("{a}", pick(T.adj, rnd));
-    } else if (rnd() < 0.8) {
-      // no dish picked: a general line about the food, still in the star's tone
+    } else if (!plain && rnd() < 0.8) {
+      // no dish picked: a general line about the food, in the review's tone
       dishLine = pick(["Everything I tried was {a}.", "The food was {a}.", "All of it was {a}.", "What I ordered was {a}."], rnd)
         .replace("{a}", pick(T.adj, rnd));
     }
@@ -207,7 +216,7 @@
       if (betterLine) middle.push(betterLine);
     } else {
       [dishLine, badLine, betterLine].forEach(function (s) { if (s) middle.push(s); });
-      if (goodLine) middle.push(pick(tier === "mixed" ? ["On the plus side, ", "That said, ", "Good part: "] : ["That said, ", "To be fair, "], rnd) + goodLine.charAt(0).toLowerCase() + goodLine.slice(1));
+      if (goodLine) middle.push(pick(["On the plus side, ", "That said, ", "Good part: "], rnd) + goodLine.charAt(0).toLowerCase() + goodLine.slice(1));
       if (likedLine) middle.push(likedLine);
       if (extra) middle.push(extra);
     }

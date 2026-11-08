@@ -67,7 +67,7 @@ main {
 .logo picture, .logo img { display: block; width: 100%; height: 100%; }
 h1 { font: 800 1.9rem/1.05 var(--display); margin: 2px 0 0; text-wrap: balance; }
 h1 .pop { color: var(--yellow); }
-.lede { margin: 0; color: var(--muted); max-width: 34em; }
+.lede { margin: 0; color: var(--muted); max-width: 34em; text-wrap: balance; }
 .lede b { color: var(--yellow); }
 
 .btn { display: block; width: 100%; text-align: center; text-decoration: none; border: 0; border-radius: 999px; padding: 13px 18px 11px; cursor: pointer; }
@@ -89,10 +89,6 @@ h1 .pop { color: var(--yellow); }
 .liked .group-label { color: var(--green); }
 .better .group-label { color: #ff6b70; }
 .group-label span { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted); }
-.stars { display: flex; justify-content: center; min-width: 0; }
-.stars button { flex: 0 1 52px; min-width: 0; height: 52px; margin: 0 3px; padding: 0; font-size: 2.2rem; line-height: 1; border: 0; background: none; color: #3a4486; cursor: pointer; border-radius: 12px; }
-.stars button.on { color: var(--yellow); text-shadow: 0 0 14px rgba(253, 241, 9, .45); }
-.star-label { text-align: center; margin: -6px 0 0; min-height: 1.4em; font: 700 1.05rem/1.4 var(--display); color: var(--yellow); }
 .chips { display: flex; flex-wrap: wrap; margin: -4px; }
 .chips button { margin: 4px; max-width: 100%; font: 500 .95rem/1.2 var(--body); min-height: 44px; padding: 9px 15px; border-radius: 999px; border: 1.5px solid rgba(11, 183, 233, .55); background: transparent; color: var(--ink); cursor: pointer; text-align: center; }
 .better .chips button { border-color: rgba(228, 41, 47, .55); }
@@ -136,13 +132,12 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   h1 { font-size: 1.65rem; }
   .logo { width: 108px; height: 108px; }
   .card { padding: 16px 12px; }
-  .stars button { height: 46px; margin: 0 2px; font-size: 1.9rem; }
   .chips button { padding: 8px 12px; font-size: .9rem; }
   .btn span { font-size: 1.08rem; }
   .guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: no-preference) {
-  .chips button, .stars button { transition: background-color .12s, color .12s, border-color .12s; }
+  .chips button { transition: background-color .12s, color .12s, border-color .12s; }
 }
 </style>
 </head>
@@ -151,20 +146,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   <header class="hero">
     <div class="logo"><picture><source type="image/webp" srcset="logo.webp"><img src="logo.png" width="128" height="128" alt="The Desi Taco Co."></picture></div>
     <h1>Thanks for coming <span class="pop">by!</span></h1>
-    <p class="lede">Tap your stars and what you had. We write your review and open Google, you just paste and post. <b>Takes 30 seconds.</b></p>
+    <p class="lede">Tap what you had. We write your review, you just paste it on Google. <b>Takes 30 seconds.</b></p>
   </header>
 
-  <section class="card" id="form" aria-labelledby="rate">
-    <h2 id="rate">How was it?</h2>
-    <div class="stars" id="stars" role="group" aria-label="Your rating">
-      <button type="button" data-s="1" aria-label="1 star" aria-pressed="false">&#9733;</button>
-      <button type="button" data-s="2" aria-label="2 stars" aria-pressed="false">&#9733;</button>
-      <button type="button" data-s="3" aria-label="3 stars" aria-pressed="false">&#9733;</button>
-      <button type="button" data-s="4" aria-label="4 stars" aria-pressed="false">&#9733;</button>
-      <button type="button" data-s="5" aria-label="5 stars" aria-pressed="false">&#9733;</button>
-    </div>
-    <p class="star-label" id="star-label" aria-live="polite"></p>
-
+  <section class="card" id="form" aria-labelledby="how">
+    <h2 id="how">How was it?</h2>
     <div class="had" id="had-block">
       <p class="group-label" id="had-label">What you had</p>
       <div class="chips" data-group="had" role="group" aria-labelledby="had-label">
@@ -216,8 +202,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       <p class="guide-title">On Google, just 4 quick taps:</p>
       <ol class="guide">
         <li>
-          <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap the stars"><polygon points="10.5,17.7 12.2,21.9 16.8,22.3 13.3,25.2 14.4,29.6 10.5,27.2 6.6,29.6 7.7,25.2 4.2,22.3 8.8,21.9" fill="#fbbc04"/><polygon points="24.5,17.7 26.2,21.9 30.8,22.3 27.3,25.2 28.4,29.6 24.5,27.2 20.6,29.6 21.7,25.2 18.2,22.3 22.8,21.9" fill="#fbbc04"/><polygon points="38.5,17.7 40.2,21.9 44.8,22.3 41.3,25.2 42.4,29.6 38.5,27.2 34.6,29.6 35.7,25.2 32.2,22.3 36.8,21.9" fill="#fbbc04"/><polygon points="52.5,17.7 54.2,21.9 58.8,22.3 55.3,25.2 56.4,29.6 52.5,27.2 48.6,29.6 49.7,25.2 46.2,22.3 50.8,21.9" fill="#fbbc04"/><polygon points="66.5,17.7 68.2,21.9 72.8,22.3 69.3,25.2 70.4,29.6 66.5,27.2 62.6,29.6 63.7,25.2 60.2,22.3 64.8,21.9" fill="#fbbc04"/><circle cx="66.5" cy="23.6" r="9.2" fill="none" stroke="#1a73e8" stroke-width="1.6" opacity=".75"/></svg></span>
-          <span class="cap">Tap <b id="g-stars">your</b> stars</span>
+          <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap the stars to rate"><rect x="2" y="12.5" width="76" height="23" rx="11.5" fill="rgba(26,115,232,.08)" stroke="#1a73e8" stroke-width="1.4" opacity=".8"/><polygon points="12.0,17.7 13.7,21.9 18.3,22.3 14.8,25.2 15.9,29.6 12.0,27.2 8.1,29.6 9.2,25.2 5.7,22.3 10.3,21.9" fill="#e8eaed" stroke="#80868b" stroke-width="1" stroke-linejoin="round"/><polygon points="26.0,17.7 27.7,21.9 32.3,22.3 28.8,25.2 29.9,29.6 26.0,27.2 22.1,29.6 23.2,25.2 19.7,22.3 24.3,21.9" fill="#e8eaed" stroke="#80868b" stroke-width="1" stroke-linejoin="round"/><polygon points="40.0,17.7 41.7,21.9 46.3,22.3 42.8,25.2 43.9,29.6 40.0,27.2 36.1,29.6 37.2,25.2 33.7,22.3 38.3,21.9" fill="#e8eaed" stroke="#80868b" stroke-width="1" stroke-linejoin="round"/><polygon points="54.0,17.7 55.7,21.9 60.3,22.3 56.8,25.2 57.9,29.6 54.0,27.2 50.1,29.6 51.2,25.2 47.7,22.3 52.3,21.9" fill="#e8eaed" stroke="#80868b" stroke-width="1" stroke-linejoin="round"/><polygon points="68.0,17.7 69.7,21.9 74.3,22.3 70.8,25.2 71.9,29.6 68.0,27.2 64.1,29.6 65.2,25.2 61.7,22.3 66.3,21.9" fill="#e8eaed" stroke="#80868b" stroke-width="1" stroke-linejoin="round"/></svg></span>
+          <span class="cap">Tap stars</span>
         </li>
         <li>
           <span class="tile"><svg viewBox="0 0 80 48" role="img" aria-label="Tap the empty review box"><rect x="6" y="10" width="68" height="28" rx="6" fill="#fff" stroke="#9aa0a6" stroke-width="1.5"/><line x1="13" y1="17" x2="13" y2="31" stroke="#1a73e8" stroke-width="1.6"/><circle cx="44" cy="24" r="9" fill="rgba(26,115,232,.15)" stroke="#1a73e8" stroke-width="1.6"/></svg></span>
@@ -236,7 +222,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     </div>
 
     <a class="btn btn-write" id="write" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>&#10024; Write my review</span><small>We write it, copy it and open Google. You paste it there.</small></a>
-    <p class="hint" id="hint" aria-live="polite">Pick your stars and at least one thing above.</p>
+    <p class="hint" id="hint" aria-live="polite">Pick at least one thing above.</p>
   </section>
 
   <!-- shown after the tap, for when they come back to this tab -->
@@ -264,11 +250,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
 </script>
 <script>
 (function () {
-  var LABELS = ["", "Poor", "Not great", "Okay", "Good", "Loved it!"];
-  var stars = 0;
   function all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
   function go(el) { try { el.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { el.scrollIntoView(true); } }
-  var starBtns = all(".stars button");
   var write = document.getElementById("write");
   var hint = document.getElementById("hint");
   var doneCard = document.getElementById("done");
@@ -291,8 +274,8 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       (typed("had") ? 1 : 0) + (typed("liked") ? 1 : 0) + (typed("better") ? 1 : 0);
   }
   function ready() {
-    if (stars && anyPicked()) { hint.textContent = "All set! Tap Write my review."; hint.className = "hint"; }
-    else { hint.textContent = "Pick your stars and at least one thing above."; hint.className = "hint"; }
+    if (anyPicked()) { hint.textContent = "All set! Tap Write my review."; hint.className = "hint"; }
+    else { hint.textContent = "Pick at least one thing above."; hint.className = "hint"; }
   }
   // briefly light up the part that still needs a tap
   function nudge(el) {
@@ -304,19 +287,6 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     box.addEventListener("input", ready);
     // the keyboard's Done/Enter closes the keyboard instead of doing nothing
     box.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.keyCode === 13) { e.preventDefault(); box.blur(); } });
-  });
-  starBtns.forEach(function (b) {
-    b.addEventListener("click", function () {
-      stars = +b.getAttribute("data-s");
-      starBtns.forEach(function (x) {
-        var n = +x.getAttribute("data-s");
-        if (n <= stars) x.classList.add("on"); else x.classList.remove("on");
-        x.setAttribute("aria-pressed", n === stars ? "true" : "false");
-      });
-      document.getElementById("star-label").textContent = LABELS[stars];
-      document.getElementById("g-stars").textContent = String(stars); // "Tap 5 stars" in the guide
-      ready();
-    });
   });
   all(".chips button").forEach(function (b) {
     b.addEventListener("click", function () {
@@ -358,10 +328,9 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   // so the customer pastes it there (one tap on most keyboards) and posts.
   write.addEventListener("click", function (e) {
     // never a dead button: say what's missing and take them there
-    if (!stars) { e.preventDefault(); hint.textContent = "Tap your stars first."; hint.className = "hint warn"; var s = document.getElementById("stars"); go(document.getElementById("form")); nudge(s); return; }
     if (!anyPicked()) { e.preventDefault(); hint.textContent = "Tap at least one thing you had or liked."; hint.className = "hint warn"; var h = document.getElementById("had-block"); go(h); nudge(h); return; }
     var review = fresh({
-      stars: stars, had: picked("had"), liked: picked("liked"), better: picked("better"),
+      had: picked("had"), liked: picked("liked"), better: picked("better"),
       otherHad: typed("had"), otherLiked: typed("liked"), otherBetter: typed("better")
     });
     if (!copyText(review)) {

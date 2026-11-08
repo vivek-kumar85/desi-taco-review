@@ -2,7 +2,7 @@
 
 The page customers open from the QR code on the counter at The Desi Taco Co., Salunkhe Vihar, Pune. Live at https://desi-taco.vercel.app (Vercel deploys every push to `main`).
 
-Customers pick their own star rating and what they had, liked or would improve (each section also has an "Other" box to type in). One tap on "Write my review" writes a short review from those choices only, copies it and opens Google's review form; the customer taps their stars, pastes, adds photos if they like, and posts it themselves. (Google doesn't let any website fill in its review box or post for someone, so the paste is the one step left.)
+Customers tap what they had, liked or would improve (each section also has an "Other" box to type in). There's no star rating on this page: people give their stars once, on Google, and the review's tone follows their picks (only good things read happy, "could be better" picks read balanced). One tap on "Write my review" writes a short review from those choices only, copies it and opens Google's review form; a 4-step picture guide above the button shows what's left there: tap stars, tap the box, Paste, Post (and Add photos). (Google doesn't let any website fill in its review box or post for someone, so the paste is the one step left.)
 
 - Everything runs in the customer's browser. Nothing is sent or stored, apart from a list of recent drafts kept on the customer's own phone so it never shows the same one twice.
 - Works on old and new phones, iPhones included: no flex `gap`, native control styling reset, 16px inputs (no iOS zoom), WebP logo with a PNG fallback, and a copy step that finishes inside the tap.
@@ -14,7 +14,7 @@ Customers pick their own star rating and what they had, liked or would improve (
 |---|---|
 | `index.html`, `logo.webp`, `logo.png`, `favicon.png`, `apple-touch-icon.png` | What Vercel serves. Built, don't edit by hand. |
 | `src/template.html` | The page: layout, styles and behaviour. |
-| `src/gen.js` | The review writer (phrase banks, tone by stars, no repeats). |
+| `src/gen.js` | The review writer (phrase banks, tone from the picks, no repeats). |
 | `src/logo_source.png` | The round logo, transparent background. |
 | `src/build.py` | Rebuilds the served files from `src/`. |
 | `tools/make_qr_card.py` | Makes the printable counter card and bag stickers (PDF). |
