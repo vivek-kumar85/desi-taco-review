@@ -247,31 +247,31 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   // {d} dish list, {it} it/they, {was} was/were, {is} is/are, {a} adjective
   var TONE = {
     love: {
-      open: ["Loved this place!", "What a find in Salunkhe Vihar.", "So glad I tried The Desi Taco Co.", "I'm hooked on this place.", "Desi Taco Co. didn't disappoint.", "This place is a gem.", "Absolutely loved it.", "Such a good find.", "Really happy with this one.", "Can't stop thinking about these tacos.", "So glad I stopped by.", "This spot is a must in Salunkhe Vihar."],
+      open: ["Loved this place!", "What a find in Salunkhe Vihar.", "So glad I tried The Desi Taco Co.", "I'm hooked on this place.", "Desi Taco Co. didn't disappoint.", "This place is a gem.", "Absolutely loved it.", "Such a good find.", "Really happy with this one.", "Can't stop thinking about these tacos.", "So glad I stopped by.", "This spot is a must in Salunkhe Vihar.", "Great desi tacos in Salunkhe Vihar.", "Loved the desi-style tacos here.", "Really good Indian-Mexican food near NIBM.", "Such a fun taco spot in Kondhwa."],
       adj: ["amazing", "so good", "really tasty", "full of flavour", "delicious", "super tasty", "fantastic", "lip-smacking"],
       dish: ["I had the {d} and {it} {was} {a}.", "The {d} {was} {a}.", "I tried the {d}, {a}!", "You've got to try the {d}.", "Ordered the {d} and {it} {was} {a}.", "Big fan of the {d}.", "The {d} {was} the star for me.", "The {d} {is} a must-try."],
-      extra: ["Desi flavours in a taco just work.", "Such a nice change from the usual fast food.", "Lots on the menu to try.", "Great spot for an evening snack.", "The fusion is done really well.", "Proper street-food vibes.", "Nothing else like it around here.", "Fresh and full of masala."],
-      close: ["I'll definitely be back!", "Must try if you're around NIBM.", "Highly recommend it.", "Can't wait to try more of the menu.", "I'm coming back for more.", "Go try it!", "Totally recommend.", "Already want to go back.", "Will be back soon.", "Recommended for anyone who loves tacos."],
+      extra: ["Desi flavours in a taco just work.", "Such a nice change from the usual fast food.", "Lots on the menu to try.", "Great spot for an evening snack.", "The fusion is done really well.", "Proper street-food vibes.", "Nothing else like it around here.", "Fresh and full of masala.", "Proper desi tacos with real Indian flavours.", "Mexican food with a proper Indian twist.", "The Indian-Mexican fusion really works.", "Tacos, quesadillas and burritos, all with a desi twist."],
+      close: ["I'll definitely be back!", "Must try if you're around NIBM.", "Highly recommend it.", "Can't wait to try more of the menu.", "I'm coming back for more.", "Go try it!", "Totally recommend.", "Already want to go back.", "Will be back soon.", "Recommended for anyone who loves tacos.", "A must for taco lovers in Pune.", "Must try if you're near Kondhwa."],
       emoji: ["🌮", "😋", "🙌", "❤️", "👌"]
     },
     like: {
-      open: ["Good experience overall.", "Nice spot for desi-style tacos.", "I enjoyed my visit.", "Pretty good food here.", "A good find in Salunkhe Vihar.", "Liked it quite a bit.", "Solid place for a quick bite.", "Good little place."],
+      open: ["Good experience overall.", "Nice spot for desi-style tacos.", "I enjoyed my visit.", "Pretty good food here.", "A good find in Salunkhe Vihar.", "Liked it quite a bit.", "Solid place for a quick bite.", "Good little place.", "Nice taco place near NIBM.", "Good Indian-Mexican food in Salunkhe Vihar."],
       adj: ["good", "tasty", "nice", "pretty good", "enjoyable", "quite tasty", "really nice"],
       dish: ["The {d} {was} {a}.", "I had the {d}, {it} {was} {a}.", "I tried the {d} and {it} {was} {a}.", "Ordered the {d}, {it} {was} {a}.", "Liked the {d}.", "The {d} {is} worth trying."],
-      extra: ["Nice twist on regular tacos.", "Good spot for an evening snack.", "Interesting fusion menu.", "Decent variety on the menu.", "A different kind of taco place."],
-      close: ["I'd come again.", "Worth a try.", "Good option for a quick bite.", "I'll be back to try more.", "Would recommend.", "Will visit again.", "Happy to come back."],
+      extra: ["Nice twist on regular tacos.", "Good spot for an evening snack.", "Interesting fusion menu.", "Decent variety on the menu.", "A different kind of taco place.", "Good Mexican food with an Indian twist.", "Nice option for desi tacos in Pune."],
+      close: ["I'd come again.", "Worth a try.", "Good option for a quick bite.", "I'll be back to try more.", "Would recommend.", "Will visit again.", "Happy to come back.", "Worth a try for taco lovers."],
       emoji: ["🌮", "👍"]
     },
     mixed: {
       open: ["Decent experience overall.", "Some things were good, some not so much.", "It was a mixed visit for me.", "Okay visit overall.", "Average experience this time.", "Not bad, not great."],
       adj: ["okay", "alright", "decent", "average"],
       dish: ["The {d} {was} {a}.", "I had the {d}, {it} {was} {a}.", "The {d} {was} {a}, nothing special.", "Tried the {d}, {it} {was} {a}."],
-      extra: ["The idea is interesting.", "Nice concept.", "The menu has some good ideas."],
+      extra: ["The idea is interesting.", "Nice concept.", "The menu has some good ideas.", "Interesting idea, desi flavours in tacos."],
       close: ["I might give it another try.", "Hope it's better next time.", "It could be great with a few fixes.", "Might come back to try something else.", "Has potential."],
       emoji: []
     },
     low: {
-      open: ["Not a great experience this time.", "I expected more, honestly.", "It didn't quite work for me this time.", "Disappointed with this visit.", "Wasn't what I hoped for.", "Not impressed this time.", "Left a bit let down.", "Could have been much better.", "Not my best food experience."],
+      open: ["Not a great experience this time.", "I expected more, honestly.", "It didn't quite work for me this time.", "Disappointed with this visit.", "Wasn't what I hoped for.", "Not impressed this time.", "Left a bit let down.", "Could have been much better.", "Not the experience I hoped for."],
       adj: ["not great", "not up to the mark", "disappointing", "below expectations", "underwhelming"],
       dish: ["The {d} {was} {a}.", "I had the {d} but {it} {was} {a}.", "Ordered the {d} and {it} {was} {a}."],
       extra: ["Maybe it was an off day.", "The concept is nice though.", "The idea has potential."],
@@ -281,7 +281,7 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   };
 
   // words too common to count as a repeat ("the" twice is fine, "spot" twice is not)
-  var COMMON = { "the": 1, "and": 1, "was": 1, "were": 1, "for": 1, "with": 1, "this": 1, "that": 1, "it's": 1, "really": 1, "very": 1, "food": 1, "have": 1, "had": 1, "but": 1, "you": 1, "too": 1, "just": 1, "taco": 1, "tacos": 1, "more": 1, "bit": 1, "time": 1, "here": 1, "place": 1, "they": 1, "what": 1, "from": 1, "like": 1, "will": 1 };
+  var COMMON = { "the": 1, "and": 1, "was": 1, "were": 1, "for": 1, "with": 1, "this": 1, "that": 1, "it's": 1, "really": 1, "very": 1, "have": 1, "had": 1, "but": 1, "you": 1, "too": 1, "just": 1, "taco": 1, "tacos": 1, "more": 1, "bit": 1, "time": 1, "here": 1, "place": 1, "they": 1, "what": 1, "from": 1, "like": 1, "will": 1 };
   function repeats(text) {
     var seen = {}, words = text.toLowerCase().match(/[a-z']+/g) || [];
     for (var i = 0; i < words.length; i++) {
@@ -293,6 +293,19 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
     }
     return false;
   }
+
+  // Search-friendly, the natural way: Google reads what reviews mention, so a
+  // draft should name what people search for (tacos, the dish, the area) once,
+  // never stuffed. At most one place name per review, and no "best X in Pune".
+  var FOOD_WORD = /taco|quesadilla|chimichanga|burrito|nachos|til gud|fusion|mexican/i;
+  var PLACE = /salunkhe vihar|nibm|kondhwa|wanowrie|pune/gi;
+  var FOOD_LINE = {
+    love: ["Desi flavours in a taco just work.", "Proper desi tacos with real Indian flavours.", "Mexican food with a proper Indian twist."],
+    like: ["Nice twist on regular tacos.", "Good Mexican food with an Indian twist."],
+    mixed: ["Interesting idea, desi flavours in tacos."],
+    low: ["Expected better from a taco place."]
+  };
+  function places(text) { return (text.match(PLACE) || []).length; }
 
   function tierOf(stars) { return stars >= 5 ? "love" : stars === 4 ? "like" : stars === 3 ? "mixed" : "low"; }
 
@@ -347,6 +360,11 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
     if (lead || middle.length < 2) parts.push(pick(T.open, rnd));
     parts = parts.concat(middle);
     if (parts.length < 3 || rnd() < 0.75) parts.push(pick(T.close, rnd));
+    // make sure the review says what the place serves at least once
+    if (!FOOD_WORD.test(parts.join(" "))) {
+      var at = parts.length > 1 ? 1 + Math.floor(rnd() * (parts.length - 1)) : parts.length;
+      parts.splice(at, 0, pick(FOOD_LINE[tier], rnd));
+    }
 
     // a few exclamation marks on happy reviews, the way people actually type
     if (tier === "love" || tier === "like") {
@@ -366,11 +384,11 @@ button:focus-visible, .cta:focus-visible, textarea:focus-visible { outline: 3px 
   function draft(choice, rnd) {
     rnd = rnd || Math.random;
     var text = once(choice, rnd);
-    for (var i = 0; i < 12 && repeats(text); i++) text = once(choice, rnd);
+    for (var i = 0; i < 40 && (repeats(text) || places(text) > 1); i++) text = once(choice, rnd);
     return text;
   }
 
-  var api = { draft: draft, DISH: DISH, GOOD: GOOD, BAD: BAD, repeats: repeats };
+  var api = { draft: draft, DISH: DISH, GOOD: GOOD, BAD: BAD, repeats: repeats, places: places, FOOD_WORD: FOOD_WORD };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.ReviewDraft = api;
 })(this);
