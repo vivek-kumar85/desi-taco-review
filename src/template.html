@@ -103,7 +103,11 @@ h1 .pop { color: var(--yellow); }
 .card[hidden] { display: none; }
 /* the review, shown before anything is copied or opened */
 .review { display: block; width: 100%; resize: none; overflow: hidden; font: 16px/1.55 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--line); border-left: 4px solid var(--yellow); border-radius: 12px; padding: 12px 14px; }
-.btn-again { display: block; margin: -4px auto 0; min-height: 44px; padding: 10px 22px; border: 1.5px solid var(--cyan); border-radius: 999px; background: transparent; color: var(--cyan); font: 700 1rem/1.2 var(--body); cursor: pointer; }
+.review.editing { border-color: var(--cyan); border-left-color: var(--yellow); box-shadow: 0 0 0 3px rgba(11, 183, 233, .2); }
+/* Write another + Edit side by side, wrapping onto two lines on the smallest phones (no flex gap: old iOS) */
+.again-row { margin: -10px 0 0; text-align: center; }
+.btn-again { display: inline-block; vertical-align: top; margin: 6px 4px 0; min-height: 44px; padding: 10px 20px; border: 1.5px solid var(--cyan); border-radius: 999px; background: transparent; color: var(--cyan); font: 700 1rem/1.2 var(--body); cursor: pointer; }
+.btn-again[aria-pressed="true"] { background: var(--cyan); color: var(--night); }
 .btn:disabled, .btn-again:disabled { opacity: .65; cursor: progress; }
 .status { margin: -4px 0 0; text-align: center; font-size: .9rem; color: var(--muted); text-wrap: balance; }
 .status:empty { display: none; }
@@ -135,6 +139,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   .chips button { padding: 8px 12px; font-size: .9rem; }
   .btn span { font-size: 1.08rem; }
   .guide { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .btn-again { padding: 10px 14px; font-size: .95rem; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .chips button { transition: background-color .12s, color .12s, border-color .12s; }
@@ -205,7 +210,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   <section class="card" id="preview" aria-labelledby="pv-title" hidden>
     <h2 id="pv-title">Your review</h2>
     <textarea class="review" id="text" rows="2" readonly aria-labelledby="pv-title"></textarea>
-    <button type="button" class="btn-again" id="again">&#8635; Write another</button>
+    <div class="again-row"><button type="button" class="btn-again" id="again">&#8635; Write another</button><button type="button" class="btn-again" id="edit" aria-pressed="false">&#9998;&#xFE0E; Edit</button></div>
 
     <!-- what Google's page needs, in pictures: Google never lets a website fill it in -->
     <div class="guide-wrap">
@@ -252,6 +257,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   var preview = document.getElementById("preview");
   var text = document.getElementById("text");
   var again = document.getElementById("again");
+  var edit = document.getElementById("edit");
   var post = document.getElementById("post");
   var note = document.getElementById("status");
   var GOOGLE = post.getAttribute("href");
@@ -363,10 +369,28 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   // The review comes first. Nothing is copied and Google doesn't open until
   // they like it; Write another swaps in a fresh one from the same picks.
   var busy = false;
+  // the whole review, no scrolling inside the box
+  function fit() { text.style.height = "auto"; text.style.height = text.scrollHeight + 4 + "px"; }
+  // Edit turns the review into a normal text box with the keyboard; Done locks it again
+  var EDIT_LABEL = edit.innerHTML;
+  function editing(on) {
+    text.readOnly = !on;
+    text.className = on ? "review editing" : "review";
+    edit.innerHTML = on ? "&#10003; Done" : EDIT_LABEL;
+    edit.setAttribute("aria-pressed", on ? "true" : "false");
+    if (on) {
+      text.focus();
+      try { var n = text.value.length; text.setSelectionRange(n, n); } catch (e) { /* old phones: the cursor stays where they tapped */ }
+    } else text.blur();
+  }
+  edit.addEventListener("click", function () { if (review && !busy) editing(text.readOnly); });
+  text.addEventListener("input", fit);
+
   function show(after) {
     if (busy) return;
     busy = true;
-    write.disabled = again.disabled = true;
+    if (!text.readOnly) editing(false);
+    write.disabled = again.disabled = edit.disabled = true;
     var label = again.innerHTML;
     if (preview.hidden) { hint.textContent = "Writing your review\u2026"; hint.className = "hint"; }
     else again.textContent = "Writing\u2026";
@@ -381,11 +405,10 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
         review = t;
         text.value = t;
         preview.hidden = false;
-        text.style.height = "auto";
-        text.style.height = text.scrollHeight + 4 + "px"; // the whole review, no scrolling inside the box
+        fit();
         note.textContent = ""; note.className = "status";
         again.innerHTML = label;
-        write.disabled = again.disabled = false;
+        write.disabled = again.disabled = edit.disabled = false;
         busy = false;
         ready();
         if (after) after();
@@ -405,7 +428,10 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   // Google never lets a website type into its review box, so they paste it.
   post.addEventListener("click", function (e) {
     if (!review || busy) { e.preventDefault(); return; } // nothing yet, or a new one is still being written
-    if (!copyText(review)) {
+    var out = text.value.trim(); // exactly what they see, their edits included
+    if (!out) { e.preventDefault(); note.textContent = "The review is empty. Type something, or tap Write another."; note.className = "status warn"; return; }
+    if (!text.readOnly) editing(false);
+    if (!copyText(out)) {
       // this phone won't copy from a web page: copy by hand, then open Google
       e.preventDefault();
       note.innerHTML = "Your phone didn't let us copy it. Press and hold the review, tap <b>Select All</b>, then <b>Copy</b>, and <a href='" + GOOGLE + "' target='_blank' rel='noopener'>open Google</a>.";
