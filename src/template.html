@@ -16,10 +16,12 @@
 <style>
 /* "Neon night": the stall's own signboard look. Navy ground, the glowing
    logo, and the logo's five colours as accents. One narrow column for a phone
-   at the counter; a sticky bar keeps the next action in reach.
-   Built for every phone, old iPhones included: no flex "gap" (iOS < 14.5
-   ignores it), no fixed backgrounds, native control styling reset, inputs at
-   16px so iOS doesn't zoom, and fallbacks before every env()/max() rule. */
+   at the counter.
+   Built for every phone, old iPhones included. Every button sits in the page
+   itself: nothing is pinned to the bottom edge, because iOS 26 Safari's
+   floating toolbar can cover or cut off pinned bars. Also: no flex "gap"
+   (iOS < 14.5 ignores it), no fixed backgrounds, native control styling reset,
+   16px fields so iOS doesn't zoom, and fallbacks before every env()/max(). */
 :root {
   --night: #0b1230;
   --night-2: #131b47;
@@ -54,25 +56,37 @@ button, a { touch-action: manipulation; -webkit-tap-highlight-color: transparent
 main {
   max-width: 480px;
   margin: 0 auto;
-  padding: 18px 16px 150px;
-  padding: calc(18px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) 150px max(16px, env(safe-area-inset-left, 0px));
+  padding: 16px 16px 40px;
+  padding: calc(16px + env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) calc(40px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
   display: grid;
   grid-gap: 20px;
   gap: 20px;
 }
 .hero { text-align: center; display: grid; justify-items: center; grid-gap: 6px; gap: 6px; }
-.logo { width: 156px; height: 156px; border-radius: 50%; background: radial-gradient(closest-side, rgba(11, 183, 233, .18), rgba(11, 18, 48, 0) 72%); }
+.logo { width: 128px; height: 128px; border-radius: 50%; background: radial-gradient(closest-side, rgba(11, 183, 233, .18), rgba(11, 18, 48, 0) 72%); }
 .logo picture, .logo img { display: block; width: 100%; height: 100%; }
-h1 { font: 800 1.95rem/1.05 var(--display); margin: 4px 0 0; text-wrap: balance; }
+h1 { font: 800 1.9rem/1.05 var(--display); margin: 2px 0 0; text-wrap: balance; }
 h1 .pop { color: var(--yellow); }
 .lede { margin: 0; color: var(--muted); max-width: 34em; }
 .lede b { color: var(--yellow); }
+
+/* the two ways in, right on the first screen */
+.choices { display: grid; grid-gap: 10px; gap: 10px; }
+.btn { display: block; width: 100%; text-align: center; text-decoration: none; border: 0; border-radius: 999px; padding: 13px 18px 11px; cursor: pointer; }
+.btn span { display: block; font: 800 1.2rem/1.15 var(--display); }
+.btn small { display: block; font: 500 .82rem/1.3 var(--body); opacity: .9; }
+.btn-write { color: var(--night); background: var(--yellow); box-shadow: 0 6px 22px rgba(253, 241, 9, .25); }
+.btn-google { color: #fff; background: var(--red); box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 8px 28px rgba(228, 41, 47, .4); }
+.btn-plain { color: var(--ink); background: transparent; border: 1.5px solid rgba(228, 41, 47, .85); box-shadow: none; padding: 11px 18px 9px; }
+.btn-plain span { font-size: 1.05rem; }
+
 .card { background: var(--night-2); border: 1px solid var(--line); border-radius: 18px; padding: 18px 16px; display: grid; grid-gap: 16px; gap: 16px; min-width: 0; }
 .card h2 { font: 700 1.3rem/1.1 var(--display); margin: 0; display: flex; align-items: center; justify-content: center; text-align: center; }
 /* the little red dashes either side of "CO." in the logo */
 .card h2:before, .card h2:after { content: ""; flex: 0 0 14px; width: 14px; height: 3px; border-radius: 2px; background: var(--red); }
 .card h2:before { margin-right: 10px; }
 .card h2:after { margin-left: 10px; }
+.step { display: inline-block; font: 700 .72rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--cyan); text-align: center; }
 .sub { margin: -10px 0 0; color: var(--muted); font-size: .92rem; text-align: center; }
 .group-label { font: 700 .78rem/1 var(--body); letter-spacing: .08em; text-transform: uppercase; margin: 0 0 10px; }
 .had .group-label { color: var(--orange); }
@@ -92,14 +106,16 @@ h1 .pop { color: var(--yellow); }
 .other::placeholder { color: #7f88b8; }
 .better .other { border-color: rgba(228, 41, 47, .8); }
 .other[hidden] { display: none; }
-.write { display: block; width: 100%; font: 800 1.2rem/1.1 var(--display); color: var(--night); background: var(--yellow); border: 0; border-radius: 999px; padding: 14px 18px 12px; cursor: pointer; box-shadow: 0 6px 22px rgba(253, 241, 9, .25); }
-.write[disabled] { opacity: .45; box-shadow: none; cursor: default; }
-.hint { margin: -6px 0 0; text-align: center; font-size: .88rem; color: var(--muted); min-height: 1.3em; }
+.hint { margin: -6px 0 0; text-align: center; font-size: .9rem; color: var(--muted); min-height: 1.3em; }
+.hint.warn { color: #ffd166; font-weight: 700; }
+/* a short glow on the part that still needs a tap */
+.nudge { border-radius: 14px; box-shadow: 0 0 0 2px var(--yellow); }
 .draft[hidden] { display: none; }
 .draft textarea { display: block; width: 100%; min-height: 140px; resize: vertical; font: 16px/1.5 var(--body); color: var(--ink); background: var(--night); border: 1.5px solid var(--cyan); border-radius: 12px; padding: 12px; }
 .row { display: flex; flex-wrap: wrap; justify-content: center; margin: -5px; }
 .row button { margin: 5px; }
 .ghost { font: 600 .95rem/1 var(--body); color: var(--ink); background: transparent; border: 1.5px solid rgba(11, 183, 233, .7); border-radius: 999px; padding: 11px 16px; cursor: pointer; min-height: 44px; }
+.then { margin: 0 0 -8px; font-weight: 700; color: var(--ink); font-size: .95rem; }
 .steps { margin: 0; padding-left: 1.3em; color: var(--muted); font-size: .92rem; }
 .steps li + li { margin-top: 4px; }
 .steps b { color: var(--ink); }
@@ -108,26 +124,15 @@ h1 .pop { color: var(--yellow); }
 .honest b { color: var(--ink); }
 footer { text-align: center; color: var(--muted); font-size: .8rem; }
 footer .thanks { display: block; font: 700 1.2rem/1.2 var(--display); color: var(--yellow); }
-button:focus-visible, .cta:focus-visible, textarea:focus-visible, .other:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
-.bar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
-  padding: 12px 16px;
-  padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(12px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
-  background: linear-gradient(to top, #0b1230 70%, rgba(11, 18, 48, 0));
-}
-/* iPhone floats fixed bars above the keyboard, over the box being typed in */
-body.typing .bar { display: none; }
-.cta { display: block; max-width: 480px; margin: 0 auto; text-align: center; text-decoration: none; color: #fff; background: var(--red); border-radius: 999px; padding: 13px 18px 12px; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08) inset, 0 8px 28px rgba(228, 41, 47, .45); }
-.cta span { display: block; font: 800 1.2rem/1.1 var(--display); }
-.cta small { display: block; font-size: .8rem; opacity: .92; }
+button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 /* small phones (iPhone SE 1st gen, older Androids): everything still fits */
 @media (max-width: 359px) {
-  h1 { font-size: 1.7rem; }
-  .logo { width: 132px; height: 132px; }
+  h1 { font-size: 1.65rem; }
+  .logo { width: 108px; height: 108px; }
   .card { padding: 16px 12px; }
   .stars button { height: 46px; margin: 0 2px; font-size: 1.9rem; }
   .chips button { padding: 8px 12px; font-size: .9rem; }
-  .cta span { font-size: 1.1rem; }
+  .btn span { font-size: 1.08rem; }
 }
 @media (prefers-reduced-motion: no-preference) {
   .chips button, .stars button { transition: background-color .12s, color .12s, border-color .12s; }
@@ -137,14 +142,19 @@ body.typing .bar { display: none; }
 <body>
 <main>
   <header class="hero">
-    <div class="logo"><picture><source type="image/webp" srcset="logo.webp"><img src="logo.png" width="156" height="156" alt="The Desi Taco Co."></picture></div>
+    <div class="logo"><picture><source type="image/webp" srcset="logo.webp"><img src="logo.png" width="128" height="128" alt="The Desi Taco Co."></picture></div>
     <h1>Thanks for coming <span class="pop">by!</span></h1>
-    <p class="lede">A Google review really helps our small kitchen. Pick a few things and we'll help you write it. <b>Takes 30 seconds.</b></p>
+    <p class="lede">A Google review really helps our small kitchen. Pick a few things and we'll write it for you. <b>Takes 30 seconds.</b></p>
   </header>
 
-  <section class="card" aria-labelledby="rate">
+  <div class="choices">
+    <button type="button" class="btn btn-write" id="start"><span>&#10024; Help me write my review</span><small>Pick your stars and what you had, we write it</small></button>
+    <a class="btn btn-plain" id="direct" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Open Google reviews</span><small>I'll write it myself</small></a>
+  </div>
+
+  <section class="card" id="form" aria-labelledby="rate">
     <h2 id="rate">How was it?</h2>
-    <div class="stars" role="group" aria-label="Your rating">
+    <div class="stars" id="stars" role="group" aria-label="Your rating">
       <button type="button" data-s="1" aria-label="1 star" aria-pressed="false">&#9733;</button>
       <button type="button" data-s="2" aria-label="2 stars" aria-pressed="false">&#9733;</button>
       <button type="button" data-s="3" aria-label="3 stars" aria-pressed="false">&#9733;</button>
@@ -153,7 +163,7 @@ body.typing .bar { display: none; }
     </div>
     <p class="star-label" id="star-label" aria-live="polite"></p>
 
-    <div class="had">
+    <div class="had" id="had-block">
       <p class="group-label" id="had-label">What you had</p>
       <div class="chips" data-group="had" role="group" aria-labelledby="had-label">
         <button type="button" aria-pressed="false">Ghee roast taco</button>
@@ -199,8 +209,8 @@ body.typing .bar { display: none; }
       <input class="other" id="other-better" type="text" maxlength="60" autocomplete="off" autocorrect="on" autocapitalize="sentences" enterkeyhint="done" placeholder="Type what could be better" aria-label="Type what could be better" hidden>
     </div>
 
-    <button type="button" class="write" id="write" disabled>Help me write it</button>
-    <p class="hint" id="hint">Pick your stars and at least one thing above.</p>
+    <button type="button" class="btn btn-write" id="write"><span>&#10024; Write my review</span></button>
+    <p class="hint" id="hint" aria-live="polite">Pick your stars and at least one thing above.</p>
   </section>
 
   <section class="card draft" id="draft" aria-labelledby="draft-title" hidden>
@@ -212,27 +222,21 @@ body.typing .bar { display: none; }
       <button type="button" class="ghost" id="again">Write another</button>
       <button type="button" class="ghost" id="copy">Copy text</button>
     </div>
+    <a class="btn btn-google" id="cta" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener"><span>Copy &amp; open Google</span><small>Copies your review and opens Google's review page</small></a>
+    <p class="toast" id="toast" aria-live="polite"></p>
+    <p class="then">Then on Google:</p>
     <ol class="steps">
-      <li>Tap <b>Copy &amp; open Google</b> below.</li>
-      <li>On Google, tap <b id="n-stars">the same stars</b> (sign in if it asks).</li>
+      <li>Tap <b id="n-stars">the same stars</b> (sign in if it asks).</li>
       <li>Press and hold the text box and tap <b>Paste</b>.</li>
-      <li>Got food pics? Tap <b>Add photos</b> on Google and pick them.</li>
+      <li>Got food pics? Tap <b>Add photos</b> and pick them.</li>
       <li>Tap <b>Post</b>. Done, shukriya!</li>
     </ol>
-    <p class="toast" id="toast" aria-live="polite"></p>
   </section>
 
   <p class="honest"><b>Something not right?</b> Tell us honestly on Google, or ask for Chirag at the counter. We read every review.</p>
 
   <footer><span class="thanks">Shukriya!</span>The Desi Taco Co. &middot; Salunkhe Vihar, Pune</footer>
 </main>
-
-<div class="bar">
-  <a class="cta" id="cta" href="https://g.page/r/CQxIrJg7w7Q-EAE/review" target="_blank" rel="noopener">
-    <span id="cta-main">Open Google reviews</span>
-    <small id="cta-sub">Opens Google's own review page</small>
-  </a>
-</div>
 
 <script>
 {{GEN}}
@@ -242,13 +246,13 @@ body.typing .bar { display: none; }
   var LABELS = ["", "Poor", "Not great", "Okay", "Good", "Loved it!"];
   var stars = 0;
   function all(sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+  function go(el) { try { el.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { el.scrollIntoView(true); } }
   var starBtns = all(".stars button");
   var write = document.getElementById("write");
   var hint = document.getElementById("hint");
   var draftCard = document.getElementById("draft");
   var text = document.getElementById("text");
   var toast = document.getElementById("toast");
-  var cta = document.getElementById("cta");
 
   function picked(group) {
     return all('.chips[data-group="' + group + '"] button[aria-pressed="true"]')
@@ -261,12 +265,22 @@ body.typing .bar { display: none; }
     var box = document.getElementById("other-" + group);
     return chip.getAttribute("aria-pressed") === "true" ? box.value.replace(/^\s+|\s+$/g, "") : "";
   }
-  function ready() {
-    var any = picked("had").length + picked("liked").length + picked("better").length +
+  function anyPicked() {
+    return picked("had").length + picked("liked").length + picked("better").length +
       (typed("had") ? 1 : 0) + (typed("liked") ? 1 : 0) + (typed("better") ? 1 : 0);
-    write.disabled = !(stars && any);
-    hint.textContent = write.disabled ? "Pick your stars and at least one thing above." : "";
   }
+  function ready() {
+    if (stars && anyPicked()) { hint.textContent = "All set, tap Write my review."; hint.className = "hint"; }
+    else { hint.textContent = "Pick your stars and at least one thing above."; hint.className = "hint"; }
+  }
+  // briefly light up the part that still needs a tap
+  function nudge(el) {
+    el.className += " nudge";
+    setTimeout(function () { el.className = el.className.replace(/\s*nudge/g, ""); }, 1600);
+  }
+
+  document.getElementById("start").addEventListener("click", function () { go(document.getElementById("form")); });
+
   all(".other").forEach(function (box) {
     box.addEventListener("input", ready);
     // the keyboard's Done/Enter closes the keyboard instead of doing nothing
@@ -296,17 +310,6 @@ body.typing .bar { display: none; }
       }
       ready();
     });
-  });
-
-  // Hide the bottom button while the keyboard is up, so it never covers a box.
-  document.addEventListener("focusin", function (e) {
-    if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) document.body.className = "typing";
-  });
-  document.addEventListener("focusout", function () {
-    setTimeout(function () {
-      var a = document.activeElement;
-      if (!a || !/^(INPUT|TEXTAREA)$/.test(a.tagName)) document.body.className = "";
-    }, 80);
   });
 
   // Remember recent drafts on this phone so the same text is never shown twice.
@@ -345,12 +348,13 @@ body.typing .bar { display: none; }
   }
   text.addEventListener("input", grow);
   write.addEventListener("click", function () {
+    // never a dead button: say what's missing and take them there
+    if (!stars) { hint.textContent = "Tap your stars first."; hint.className = "hint warn"; var s = document.getElementById("stars"); go(document.getElementById("form")); nudge(s); return; }
+    if (!anyPicked()) { hint.textContent = "Tap at least one thing you had or liked."; hint.className = "hint warn"; var h = document.getElementById("had-block"); go(h); nudge(h); return; }
     compose();
     draftCard.hidden = false;
     grow(); // measure again now that the box is visible
-    document.getElementById("cta-main").textContent = "Copy & open Google";
-    document.getElementById("cta-sub").textContent = "Copies your review, then just paste it";
-    try { draftCard.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { draftCard.scrollIntoView(true); }
+    go(draftCard);
   });
   document.getElementById("again").addEventListener("click", compose);
 
@@ -395,9 +399,7 @@ body.typing .bar { display: none; }
     return ok;
   }
   document.getElementById("copy").addEventListener("click", copyNow);
-  cta.addEventListener("click", function () {
-    if (!draftCard.hidden) copyNow(); // the link then opens Google's review form as normal
-  });
+  document.getElementById("cta").addEventListener("click", copyNow); // then the link opens Google as normal
 })();
 </script>
 </body>
