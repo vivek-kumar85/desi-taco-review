@@ -10,6 +10,8 @@ Customers tap what they had, liked or would improve (each section also has an "O
 - Cloudflare's own Web Analytics counter is switched on for the domain, so it adds its cookie-free page-view beacon.
 - Works on old and new phones, iPhones included: no flex `gap`, native control styling reset, 16px inputs (no iOS zoom), WebP logo with a PNG fallback, and a copy step that finishes inside the tap.
 - Google review link: https://g.page/r/CQxIrJg7w7Q-EAE/review
+- Chips follow the owner's list (Nov 2026): "What you had" is a Flavour row (Punjabi bhuna, Kadhai masala, Maharashtrian green thecha, Bombay green masala, Andhra pepper fry, Kundapura ghee roast) and a Dish row (Taco, Cheese shell taco, Burrito roll, Chimichanga, Quesadilla, Nachos & cheese); one flavour + one dish is written as one dish ("Kundapura ghee roast taco").
+- Links at the bottom: Order on Zomato (https://www.zomato.com/pune/the-desi-taco-co-salunkhe-vihar-road/order), Order on Swiggy (https://www.swiggy.com/restaurants/the-desi-taco-co-kondhwa-kondhwa-pune-1304279) and Follow on Instagram (https://www.instagram.com/thedesitacocompany/).
 
 ## Files
 

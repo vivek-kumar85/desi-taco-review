@@ -91,6 +91,9 @@ h1 .pop { color: var(--yellow); }
 .had .group-label { color: var(--orange); }
 .liked .group-label { color: var(--green); }
 .better .group-label { color: #ff6b70; }
+/* "What you had" comes in two rows: flavour, then dish */
+.sub-label { margin: 0 0 6px; font: 600 .8rem/1.2 var(--body); color: var(--muted); }
+.chips + .sub-label { margin-top: 14px; }
 .group-label span { text-transform: none; letter-spacing: 0; font-weight: 500; color: var(--muted); }
 .chips { display: flex; flex-wrap: wrap; margin: -4px; }
 .chips button { margin: 4px; max-width: 100%; font: 500 .95rem/1.2 var(--body); min-height: 44px; padding: 9px 15px; border-radius: 999px; border: 1.5px solid rgba(11, 183, 233, .55); background: transparent; color: var(--ink); cursor: pointer; text-align: center; }
@@ -133,6 +136,13 @@ h1 .pop { color: var(--yellow); }
 .guide-note b { color: var(--ink); white-space: nowrap; }
 .honest { margin: 0; font-size: .9rem; color: var(--muted); text-align: center; }
 .honest b { color: var(--ink); }
+/* order again or follow: small links at the end, never competing with the review */
+.links { text-align: center; }
+.links-title { margin: 0; font-size: .85rem; color: var(--muted); }
+.links a { display: inline-block; vertical-align: top; margin: 8px 4px 0; min-height: 44px; padding: 11px 16px; border: 1.5px solid; border-radius: 999px; font: 700 .9rem/1.2 var(--body); text-decoration: none; }
+.links .zomato { color: #ff7a85; border-color: rgba(226, 55, 68, .75); }
+.links .swiggy { color: #ffa45c; border-color: rgba(252, 128, 25, .75); }
+.links .insta { color: #f5a6d6; border-color: rgba(214, 41, 118, .75); }
 footer { text-align: center; color: var(--muted); font-size: .8rem; }
 footer .thanks { display: block; font: 700 1.2rem/1.2 var(--display); color: var(--yellow); }
 button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
@@ -163,16 +173,23 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     <h2 id="how">How was it?</h2>
     <div class="had" id="had-block">
       <p class="group-label" id="had-label">What you had</p>
-      <div class="chips" data-group="had" role="group" aria-labelledby="had-label">
-        <button type="button" aria-pressed="false">Ghee roast taco</button>
-        <button type="button" aria-pressed="false">Andhra pepper fry taco</button>
-        <button type="button" aria-pressed="false">Punjabi bhuna taco</button>
+      <p class="sub-label" id="flavour-label">Flavour</p>
+      <div class="chips" data-group="had" role="group" aria-labelledby="had-label flavour-label">
+        <button type="button" aria-pressed="false">Punjabi bhuna</button>
+        <button type="button" aria-pressed="false">Kadhai masala</button>
+        <button type="button" aria-pressed="false">Maharashtrian green thecha</button>
+        <button type="button" aria-pressed="false">Bombay green masala</button>
+        <button type="button" aria-pressed="false">Andhra pepper fry</button>
+        <button type="button" aria-pressed="false">Kundapura ghee roast</button>
+      </div>
+      <p class="sub-label" id="dish-label">Dish</p>
+      <div class="chips" data-group="had" role="group" aria-labelledby="had-label dish-label">
+        <button type="button" aria-pressed="false">Taco</button>
         <button type="button" aria-pressed="false">Cheese shell taco</button>
-        <button type="button" aria-pressed="false">Chimichanga</button>
-        <button type="button" aria-pressed="false">Kheema thecha quesadilla</button>
         <button type="button" aria-pressed="false">Burrito roll</button>
-        <button type="button" aria-pressed="false">Nachos</button>
-        <button type="button" aria-pressed="false">Til gud poli</button>
+        <button type="button" aria-pressed="false">Chimichanga</button>
+        <button type="button" aria-pressed="false">Quesadilla</button>
+        <button type="button" aria-pressed="false">Nachos &amp; cheese</button>
         <button type="button" aria-pressed="false" data-other="had">Other&hellip;</button>
       </div>
       <input class="other" id="other-had" type="text" maxlength="60" autocomplete="off" autocorrect="on" autocapitalize="sentences" enterkeyhint="done" placeholder="Type what you had" aria-label="Type what you had" hidden>
@@ -181,13 +198,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
       <p class="group-label" id="liked-label">What you liked</p>
       <div class="chips" data-group="liked" role="group" aria-labelledby="liked-label">
         <button type="button" aria-pressed="false">Taste</button>
-        <button type="button" aria-pressed="false">Spice level</button>
-        <button type="button" aria-pressed="false">Big portions</button>
-        <button type="button" aria-pressed="false">Value for money</button>
-        <button type="button" aria-pressed="false">Quick service</button>
+        <button type="button" aria-pressed="false">The vibe</button>
+        <button type="button" aria-pressed="false">Portions</button>
         <button type="button" aria-pressed="false">Friendly staff</button>
         <button type="button" aria-pressed="false">Veg options</button>
-        <button type="button" aria-pressed="false">The vibe</button>
+        <button type="button" aria-pressed="false">Value for money</button>
         <button type="button" aria-pressed="false" data-other="liked">Other&hellip;</button>
       </div>
       <input class="other" id="other-liked" type="text" maxlength="60" autocomplete="off" autocorrect="on" autocapitalize="sentences" enterkeyhint="done" placeholder="Type what you liked" aria-label="Type what you liked" hidden>
@@ -247,6 +262,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
 
   <p class="honest"><b>Something not right?</b> Tell us honestly on Google, or ask for Chirag at the counter. We read every review.</p>
 
+  <section class="links" aria-label="Order again or follow us">
+    <p class="links-title">Hungry again? Order online or follow us</p>
+    <a class="zomato" href="https://www.zomato.com/pune/the-desi-taco-co-salunkhe-vihar-road/order" target="_blank" rel="noopener">Order on Zomato</a><a class="swiggy" href="https://www.swiggy.com/restaurants/the-desi-taco-co-kondhwa-kondhwa-pune-1304279" target="_blank" rel="noopener">Order on Swiggy</a><a class="insta" href="https://www.instagram.com/thedesitacocompany/" target="_blank" rel="noopener">Follow on Instagram</a>
+  </section>
+
   <footer><span class="thanks">Shukriya!</span>The Desi Taco Co. &middot; Salunkhe Vihar, Pune</footer>
 </main>
 
@@ -275,26 +295,31 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-  var DISH = {
-    "Ghee roast taco": "ghee roast taco",
-    "Andhra pepper fry taco": "Andhra pepper fry taco",
-    "Punjabi bhuna taco": "Punjabi bhuna taco",
-    "Cheese shell taco": "cheese shell taco",
-    "Chimichanga": "chimichanga",
-    "Kheema thecha quesadilla": "kheema thecha quesadilla",
-    "Burrito roll": "burrito roll",
-    "Nachos": "nachos",
-    "Til gud poli": "til gud poli"
+  // "What you had" is two rows on the page (the owner's list): the flavour,
+  // then the dish. One flavour + one dish reads "Punjabi bhuna taco".
+  var FLAVOUR = {
+    "Punjabi bhuna": "Punjabi bhuna",
+    "Kadhai masala": "kadhai masala",
+    "Maharashtrian green thecha": "Maharashtrian green thecha",
+    "Bombay green masala": "Bombay green masala",
+    "Andhra pepper fry": "Andhra pepper fry",
+    "Kundapura ghee roast": "Kundapura ghee roast"
   };
-  var PLURAL = { "nachos": true };
+  var DISH = {
+    "Taco": "taco",
+    "Cheese shell taco": "cheese shell taco",
+    "Burrito roll": "burrito roll",
+    "Chimichanga": "chimichanga",
+    "Quesadilla": "quesadilla",
+    "Nachos & cheese": "cheese nachos"
+  };
+  function pluralOf(x) { return /s$/.test(x) ? x : x + "s"; } // taco -> tacos, nachos stay
 
   // every highlight is a full clause, so any mix of them lists cleanly
   var GOOD = {
     "Taste": ["the flavours were spot on", "everything was full of flavour", "every bite had proper desi taste", "the food was really tasty", "the masalas were perfectly done"],
-    "Spice level": ["the spice level was just right for me", "I loved the kick of spice", "the spice was nicely balanced", "the heat was perfect", "the spice hit the right note"],
-    "Big portions": ["the portions were generous", "one plate filled me up", "the portions were really filling", "you get a lot for one order", "I left properly full"],
+    "Portions": ["the portions were generous", "one plate filled me up", "the portions were really filling", "you get a lot for one order", "I left properly full"],
     "Value for money": ["it's great value for money", "the prices are very fair", "it's really pocket-friendly", "it doesn't burn a hole in your pocket", "the pricing is reasonable"],
-    "Quick service": ["the food came out quickly", "the service was quick", "I didn't have to wait long", "the order was ready fast", "they were quick with the order"],
     "Friendly staff": ["the staff were super friendly", "the people at the counter were really friendly", "the team was warm and welcoming", "everyone was polite and helpful", "the staff made me feel welcome"],
     "Veg options": ["there are good veg options too", "vegetarians have plenty to choose from", "the veg options are solid", "the veg fillings are just as good", "it's great for vegetarians too"],
     "The vibe": ["the evening vibe's chill", "the vibe is fun and relaxed", "it's got a nice easy-going vibe", "the place has a fun vibe", "it's a nice chill spot to hang out"]
@@ -355,7 +380,7 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
   // Search-friendly, the natural way: Google reads what reviews mention, so a
   // draft should name what people search for (tacos, the dish, the area) once,
   // never stuffed. At most one place name per review, and no "best X in Pune".
-  var FOOD_WORD = /taco|quesadilla|chimichanga|burrito|nachos|til gud|fusion|mexican/i;
+  var FOOD_WORD = /taco|quesadilla|chimichanga|burrito|nachos|fusion|mexican/i;
   var PLACE = /salunkhe vihar|nibm|kondhwa|wanowrie|pune/gi;
   var FOOD_LINE = {
     love: ["Desi flavours in a taco just work.", "Proper desi tacos with real Indian flavours.", "Mexican food with a proper Indian twist."],
@@ -425,8 +450,27 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
 
   function once(choice, rnd) {
     var tier = toneOf(choice, rnd), T = TONE[tier];
-    var dishes = (choice.had || []).filter(function (h) { return DISH[h]; }).map(function (h) { return DISH[h]; });
     var otherHad = clean(choice.otherHad), otherLiked = clean(choice.otherLiked), otherBetter = clean(choice.otherBetter);
+    // no verdict on the food when the review is balanced or their own words
+    // could be about the food ("taste was bland" next to "it was tasty")
+    var plain = tier === "mixed" || !!otherBetter;
+    var had = choice.had || [];
+    var flavours = had.filter(function (h) { return FLAVOUR[h]; }).map(function (h) { return FLAVOUR[h]; });
+    var dishes = had.filter(function (h) { return DISH[h]; }).map(function (h) { return DISH[h]; });
+    var flavourLine = "";
+    if (flavours.length && dishes.length === 1) {
+      // "Punjabi bhuna taco", or "Punjabi bhuna and kadhai masala tacos"
+      dishes = [list(flavours, rnd) + " " + (flavours.length > 1 ? pluralOf(dishes[0]) : dishes[0])];
+    } else if (flavours.length === 1 && dishes.length > 1) {
+      var k = Math.floor(rnd() * dishes.length);
+      dishes[k] = flavours[0] + " " + dishes[k];
+    } else if (flavours.length > 1 && dishes.length > 1) {
+      flavourLine = pick(plain
+        ? ["Went for the {f} flavours.", "Tried the {f} flavours."]
+        : ["Loved the {f} flavours.", "Tried the {f} flavours and liked them all.", "The {f} flavours were a hit."], rnd).replace("{f}", list(flavours, rnd));
+    } else if (flavours.length) {
+      dishes = flavours.slice(); // only a flavour picked: that's what they had
+    }
     if (otherHad) dishes.push(otherHad);
     var good = clauses(choice.liked || [], GOOD, rnd, 3);
     var bad = clauses(choice.better || [], BAD, rnd, 2);
@@ -435,14 +479,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     var betterLine = otherBetter ? customBetter(otherBetter, rnd, soft && !bad.length) : "";
 
     var goodLine = good.length ? cap(list(good, rnd)) + "." : "";
-    // no verdict on the food when the review is balanced or their own words
-    // could be about the food ("taste was bland" next to "it was tasty")
-    var plain = tier === "mixed" || !!otherBetter;
     var dishLine = "";
     if (dishes.length) {
       var ds = shuffle(dishes, rnd).slice(0, 3);
       if (otherHad && ds.indexOf(otherHad) < 0) ds[ds.length - 1] = otherHad; // never drop what they typed
-      var many = ds.length > 1 || PLURAL[ds[0]] || (ds[0] === otherHad && plural(otherHad));
+      var many = ds.length > 1 || (ds[0] === otherHad ? plural(otherHad) : /s$/.test(ds[0]));
       dishLine = pick(plain ? PLAIN_DISH : T.dish, rnd)
         .replace("{d}", list(ds, rnd))
         .replace("{it}", many ? "they" : "it")
@@ -464,11 +505,11 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
 
     var middle = [];
     if (tier === "love" || tier === "like") {
-      middle = shuffle([dishLine, goodLine, likedLine, extra].filter(Boolean), rnd);
+      middle = shuffle([dishLine, flavourLine, goodLine, likedLine, extra].filter(Boolean), rnd);
       if (badLine) middle.push(badLine);
       if (betterLine) middle.push(betterLine);
     } else {
-      [dishLine, badLine, betterLine].forEach(function (s) { if (s) middle.push(s); });
+      [dishLine, flavourLine, badLine, betterLine].forEach(function (s) { if (s) middle.push(s); });
       if (goodLine) middle.push(pick(["On the plus side, ", "That said, ", "Good part: "], rnd) + goodLine.charAt(0).toLowerCase() + goodLine.slice(1));
       if (likedLine) middle.push(likedLine);
       if (extra) middle.push(extra);
@@ -507,12 +548,16 @@ button:focus-visible, a:focus-visible, textarea:focus-visible, .other:focus-visi
     [choice.otherHad, choice.otherLiked, choice.otherBetter].forEach(function (x) {
       (clean(x).toLowerCase().match(/[a-z']+/g) || []).forEach(function (w) { ignore[w] = 1; ignore[w.replace(/s$/, "")] = 1; });
     });
+    // the names of what they had may share words ("green", "masala", "cheese")
+    (choice.had || []).forEach(function (h) {
+      ((FLAVOUR[h] || DISH[h] || "").toLowerCase().match(/[a-z']+/g) || []).forEach(function (w) { ignore[w] = 1; ignore[w.replace(/s$/, "")] = 1; });
+    });
     var text = once(choice, rnd);
     for (var i = 0; i < 40 && (repeats(text, ignore) || places(text) > 1); i++) text = once(choice, rnd);
     return text;
   }
 
-  var api = { draft: draft, DISH: DISH, GOOD: GOOD, BAD: BAD, repeats: repeats, places: places, FOOD_WORD: FOOD_WORD };
+  var api = { draft: draft, FLAVOUR: FLAVOUR, DISH: DISH, GOOD: GOOD, BAD: BAD, repeats: repeats, places: places, FOOD_WORD: FOOD_WORD };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.ReviewDraft = api;
 })(this);

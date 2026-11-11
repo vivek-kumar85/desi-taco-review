@@ -22,26 +22,31 @@
   }
   function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-  var DISH = {
-    "Ghee roast taco": "ghee roast taco",
-    "Andhra pepper fry taco": "Andhra pepper fry taco",
-    "Punjabi bhuna taco": "Punjabi bhuna taco",
-    "Cheese shell taco": "cheese shell taco",
-    "Chimichanga": "chimichanga",
-    "Kheema thecha quesadilla": "kheema thecha quesadilla",
-    "Burrito roll": "burrito roll",
-    "Nachos": "nachos",
-    "Til gud poli": "til gud poli"
+  // "What you had" is two rows on the page (the owner's list): the flavour,
+  // then the dish. One flavour + one dish reads "Punjabi bhuna taco".
+  var FLAVOUR = {
+    "Punjabi bhuna": "Punjabi bhuna",
+    "Kadhai masala": "kadhai masala",
+    "Maharashtrian green thecha": "Maharashtrian green thecha",
+    "Bombay green masala": "Bombay green masala",
+    "Andhra pepper fry": "Andhra pepper fry",
+    "Kundapura ghee roast": "Kundapura ghee roast"
   };
-  var PLURAL = { "nachos": true };
+  var DISH = {
+    "Taco": "taco",
+    "Cheese shell taco": "cheese shell taco",
+    "Burrito roll": "burrito roll",
+    "Chimichanga": "chimichanga",
+    "Quesadilla": "quesadilla",
+    "Nachos & cheese": "cheese nachos"
+  };
+  function pluralOf(x) { return /s$/.test(x) ? x : x + "s"; } // taco -> tacos, nachos stay
 
   // every highlight is a full clause, so any mix of them lists cleanly
   var GOOD = {
     "Taste": ["the flavours were spot on", "everything was full of flavour", "every bite had proper desi taste", "the food was really tasty", "the masalas were perfectly done"],
-    "Spice level": ["the spice level was just right for me", "I loved the kick of spice", "the spice was nicely balanced", "the heat was perfect", "the spice hit the right note"],
-    "Big portions": ["the portions were generous", "one plate filled me up", "the portions were really filling", "you get a lot for one order", "I left properly full"],
+    "Portions": ["the portions were generous", "one plate filled me up", "the portions were really filling", "you get a lot for one order", "I left properly full"],
     "Value for money": ["it's great value for money", "the prices are very fair", "it's really pocket-friendly", "it doesn't burn a hole in your pocket", "the pricing is reasonable"],
-    "Quick service": ["the food came out quickly", "the service was quick", "I didn't have to wait long", "the order was ready fast", "they were quick with the order"],
     "Friendly staff": ["the staff were super friendly", "the people at the counter were really friendly", "the team was warm and welcoming", "everyone was polite and helpful", "the staff made me feel welcome"],
     "Veg options": ["there are good veg options too", "vegetarians have plenty to choose from", "the veg options are solid", "the veg fillings are just as good", "it's great for vegetarians too"],
     "The vibe": ["the evening vibe's chill", "the vibe is fun and relaxed", "it's got a nice easy-going vibe", "the place has a fun vibe", "it's a nice chill spot to hang out"]
@@ -102,7 +107,7 @@
   // Search-friendly, the natural way: Google reads what reviews mention, so a
   // draft should name what people search for (tacos, the dish, the area) once,
   // never stuffed. At most one place name per review, and no "best X in Pune".
-  var FOOD_WORD = /taco|quesadilla|chimichanga|burrito|nachos|til gud|fusion|mexican/i;
+  var FOOD_WORD = /taco|quesadilla|chimichanga|burrito|nachos|fusion|mexican/i;
   var PLACE = /salunkhe vihar|nibm|kondhwa|wanowrie|pune/gi;
   var FOOD_LINE = {
     love: ["Desi flavours in a taco just work.", "Proper desi tacos with real Indian flavours.", "Mexican food with a proper Indian twist."],
@@ -172,8 +177,27 @@
 
   function once(choice, rnd) {
     var tier = toneOf(choice, rnd), T = TONE[tier];
-    var dishes = (choice.had || []).filter(function (h) { return DISH[h]; }).map(function (h) { return DISH[h]; });
     var otherHad = clean(choice.otherHad), otherLiked = clean(choice.otherLiked), otherBetter = clean(choice.otherBetter);
+    // no verdict on the food when the review is balanced or their own words
+    // could be about the food ("taste was bland" next to "it was tasty")
+    var plain = tier === "mixed" || !!otherBetter;
+    var had = choice.had || [];
+    var flavours = had.filter(function (h) { return FLAVOUR[h]; }).map(function (h) { return FLAVOUR[h]; });
+    var dishes = had.filter(function (h) { return DISH[h]; }).map(function (h) { return DISH[h]; });
+    var flavourLine = "";
+    if (flavours.length && dishes.length === 1) {
+      // "Punjabi bhuna taco", or "Punjabi bhuna and kadhai masala tacos"
+      dishes = [list(flavours, rnd) + " " + (flavours.length > 1 ? pluralOf(dishes[0]) : dishes[0])];
+    } else if (flavours.length === 1 && dishes.length > 1) {
+      var k = Math.floor(rnd() * dishes.length);
+      dishes[k] = flavours[0] + " " + dishes[k];
+    } else if (flavours.length > 1 && dishes.length > 1) {
+      flavourLine = pick(plain
+        ? ["Went for the {f} flavours.", "Tried the {f} flavours."]
+        : ["Loved the {f} flavours.", "Tried the {f} flavours and liked them all.", "The {f} flavours were a hit."], rnd).replace("{f}", list(flavours, rnd));
+    } else if (flavours.length) {
+      dishes = flavours.slice(); // only a flavour picked: that's what they had
+    }
     if (otherHad) dishes.push(otherHad);
     var good = clauses(choice.liked || [], GOOD, rnd, 3);
     var bad = clauses(choice.better || [], BAD, rnd, 2);
@@ -182,14 +206,11 @@
     var betterLine = otherBetter ? customBetter(otherBetter, rnd, soft && !bad.length) : "";
 
     var goodLine = good.length ? cap(list(good, rnd)) + "." : "";
-    // no verdict on the food when the review is balanced or their own words
-    // could be about the food ("taste was bland" next to "it was tasty")
-    var plain = tier === "mixed" || !!otherBetter;
     var dishLine = "";
     if (dishes.length) {
       var ds = shuffle(dishes, rnd).slice(0, 3);
       if (otherHad && ds.indexOf(otherHad) < 0) ds[ds.length - 1] = otherHad; // never drop what they typed
-      var many = ds.length > 1 || PLURAL[ds[0]] || (ds[0] === otherHad && plural(otherHad));
+      var many = ds.length > 1 || (ds[0] === otherHad ? plural(otherHad) : /s$/.test(ds[0]));
       dishLine = pick(plain ? PLAIN_DISH : T.dish, rnd)
         .replace("{d}", list(ds, rnd))
         .replace("{it}", many ? "they" : "it")
@@ -211,11 +232,11 @@
 
     var middle = [];
     if (tier === "love" || tier === "like") {
-      middle = shuffle([dishLine, goodLine, likedLine, extra].filter(Boolean), rnd);
+      middle = shuffle([dishLine, flavourLine, goodLine, likedLine, extra].filter(Boolean), rnd);
       if (badLine) middle.push(badLine);
       if (betterLine) middle.push(betterLine);
     } else {
-      [dishLine, badLine, betterLine].forEach(function (s) { if (s) middle.push(s); });
+      [dishLine, flavourLine, badLine, betterLine].forEach(function (s) { if (s) middle.push(s); });
       if (goodLine) middle.push(pick(["On the plus side, ", "That said, ", "Good part: "], rnd) + goodLine.charAt(0).toLowerCase() + goodLine.slice(1));
       if (likedLine) middle.push(likedLine);
       if (extra) middle.push(extra);
@@ -254,12 +275,16 @@
     [choice.otherHad, choice.otherLiked, choice.otherBetter].forEach(function (x) {
       (clean(x).toLowerCase().match(/[a-z']+/g) || []).forEach(function (w) { ignore[w] = 1; ignore[w.replace(/s$/, "")] = 1; });
     });
+    // the names of what they had may share words ("green", "masala", "cheese")
+    (choice.had || []).forEach(function (h) {
+      ((FLAVOUR[h] || DISH[h] || "").toLowerCase().match(/[a-z']+/g) || []).forEach(function (w) { ignore[w] = 1; ignore[w.replace(/s$/, "")] = 1; });
+    });
     var text = once(choice, rnd);
     for (var i = 0; i < 40 && (repeats(text, ignore) || places(text) > 1); i++) text = once(choice, rnd);
     return text;
   }
 
-  var api = { draft: draft, DISH: DISH, GOOD: GOOD, BAD: BAD, repeats: repeats, places: places, FOOD_WORD: FOOD_WORD };
+  var api = { draft: draft, FLAVOUR: FLAVOUR, DISH: DISH, GOOD: GOOD, BAD: BAD, repeats: repeats, places: places, FOOD_WORD: FOOD_WORD };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.ReviewDraft = api;
 })(this);
